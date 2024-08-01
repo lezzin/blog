@@ -10,6 +10,8 @@ const Post = {
         this.post_id = id;
 
         document.title = `Blog | Postagem ${id}`;
+
+        window.scrollTo({ top: 0 });
     },
     methods: {
         share: function () {
@@ -19,8 +21,7 @@ const Post = {
                 title: 'Blog de Wellyngton Souza',
                 text: 'Compartilhar postagem do blog',
                 url: currentUrl,
-            })
-                .catch((error) => alert('Error sharing: ', error));
+            });
         }
     }
 }

@@ -12,10 +12,6 @@
 
 <body>
     <div id="app">
-        <header class="header mw">
-            <router-link to="/" class="header__logo">Wellyngton Souza</router-link>
-        </header>
-
         <main class="mw">
             <router-view></router-view>
         </main>
@@ -26,85 +22,125 @@
     </div>
 
     <template id="home-template">
-        <nav class="preview">
-            <router-link class="post" to="post/1">
-                <h2 class="post__title">Título da postagem</h2>
-                <p class="post__description">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Animi, quia.</p>
+        <div>
+            <div class="presentation">
+                <h2 class="presentation__title">Olá, sou Wellyngton Souza</h2>
+                <p class="presentation__description">
+                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sapiente, fugiat omnis fugit enim velit
+                    rem
+                    natus nesciunt, quasi corporis quidem, quos maxime ex repudiandae itaque eaque. Sequi beatae, modi
+                    omnis facilis optio harum alias unde dolor, quisquam veniam sed, magni eos praesentium reprehenderit
+                    dolore quasi assumenda at sit natus minus.
+                </p>
+            </div>
+            <nav class="preview">
+                <router-link class="post" to="post/1">
+                    <h2 class="post__title">Título da postagem</h2>
+                    <p class="post__description">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Animi, quia.
+                    </p>
 
-                <div class="post__tags">
-                    <span class="tag">HTML</span>
-                    <span class="tag">CSS</span>
-                    <span class="tag">JavaScript</span>
-                </div>
-            </router-link>
-
-            <router-link class="post" to="post/2">
-                <h2 class="post__title">Título da postagem</h2>
-                <p class="post__description">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Animi, quia.</p>
-
-                <div class="post__tags">
-                    <span class="tag">Rede Neural</span>
-                    <span class="tag">Machine Learning</span>
-                </div>
-            </router-link>
-
-            <router-link class="post" to="post/3">
-                <h2 class="post__title">Título da postagem</h2>
-                <p class="post__description">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Animi, quia.</p>
-
-                <div class="post__tags">
-                    <span class="tag">Rede Neural</span>
-                    <span class="tag">Machine Learning</span>
-                </div>
-            </router-link>
-
-            <router-link class="post" to="post/4">
-                <h2 class="post__title">Título da postagem</h2>
-                <p class="post__description">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Animi, quia.</p>
-
-                <div class="post__tags">
-                    <span class="tag">Rede Neural</span>
-                    <span class="tag">Machine Learning</span>
-                </div>
-            </router-link>
-        </nav>
+                    <div class="post__tags">
+                        <span class="tag">HTML</span>
+                        <span class="tag">CSS</span>
+                        <span class="tag">JavaScript</span>
+                    </div>
+                </router-link>
+            </nav>
+        </div>
     </template>
 
     <template id="post-template">
-        <section class="view">
-            <h2 class="view__title">Postagem {{ post_id }}</h2>
+        <div>
+            <router-link to="/" class="btn btn--back"><i class="bi bi-arrow-left"></i> Voltar</router-link>
 
-            <img src="https://placehold.co/768x400" alt="Imagem da postagem">
+            <section class="view">
+                <h2 class="view__title">Postagem {{ post_id }}</h2>
 
-            <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. A, et?</p>
-            <p>
-                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Lorem ipsum dolor sit amet consectetur
-                adipisicing elit. Dignissimos quibusdam voluptas temporibus illum architecto? Nemo iure impedit
-                distinctio id rerum sapiente est! Harum, nisi. Officiis quis illo rerum sit recusandae quaerat nulla
-                sint inventore nam explicabo, consequuntur numquam molestiae excepturi assumenda perspiciatis quibusdam
-                enim dignissimos? Recusandae nisi minus itaque magni?
-            </p>
+                <img src="https://placehold.co/768x400" alt="Imagem da postagem">
 
-            <h3>Lorem, ipsum dolor.</h3>
+                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. A, et?</p>
+                <p>
+                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Lorem ipsum dolor sit amet consectetur
+                    adipisicing elit. Dignissimos quibusdam voluptas temporibus illum architecto? Nemo iure impedit
+                    distinctio id rerum sapiente est! Harum, nisi. Officiis quis illo rerum sit recusandae quaerat nulla
+                    sint inventore nam explicabo, consequuntur numquam molestiae excepturi assumenda perspiciatis
+                    quibusdam
+                    enim dignissimos? Recusandae nisi minus itaque magni?
+                </p>
 
-            <iframe src="https://www.youtube.com/embed/CD-JJe1x_2U?si=XMj4GhlLDKsemnDF" title="YouTube video player"
-                frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <h3>Lorem, ipsum dolor.</h3>
 
-            <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium iusto fugit, ea quis quo porro
-                vitae dignissimos inventore hic corporis?
-            </p>
+                <iframe src="https://www.youtube.com/embed/CD-JJe1x_2U?si=XMj4GhlLDKsemnDF" title="YouTube video player"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque!</p>
+                <p>
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium iusto fugit, ea quis quo porro
+                    vitae dignissimos inventore hic corporis?
+                </p>
 
-            <div class="view__footer">
-                <a class="share" @click="share" @v-if="navigator.share !== undefined" href="javascript:void(0)" title="Compartilhar postagem">
-                    <i class="bi bi-share"></i> Compartilhar
-                </a>
-            </div>
-        </section>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque!</p>
+
+                <div class="view__footer">
+                    <a class="btn btn--success" @click="share" @v-if="navigator.share !== undefined"
+                        href="javascript:void(0)" title="Compartilhar postagem">
+                        <i class="bi bi-share"></i> Compartilhar
+                    </a>
+                </div>
+            </section>
+        </div>
+    </template>
+
+    <template id="admin-template">
+        <div class="admin">
+            <header class="admin__header">
+                <h2 class="admin__title">Postagens</h2>
+
+                <button type="button" class="btn btn--success" title="Adicionar nova postagem" @click="openModal">
+                    <i class="bi bi-plus"></i> Nova postagem
+                </button>
+            </header>
+
+            <nav class="preview">
+                <router-link class="post" to="edit/post/1">
+                    <h2 class="post__title">Título da postagem</h2>
+                    <p class="post__description">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Animi, quia.
+                    </p>
+
+                    <div class="post__tags">
+                        <span class="tag">HTML</span>
+                        <span class="tag">CSS</span>
+                        <span class="tag">JavaScript</span>
+                    </div>
+                </router-link>
+            </nav>
+
+            <aside :class="['modal', modalOpened && 'active']">
+                <div class="modal__dialog">
+                    <button type="button" class="btn modal__close" title="Fechar modal" @click="closeModal">
+                        <i class="bi bi-x"></i>
+                    </button>
+
+                    <form action="#" class="form">
+                        <h3 class="form__title">Adicionar nova postagem</h3>
+
+                        <div class="form__group">
+                            <label for="title">Título</label>
+                            <input type="text" name="title" id="title" placeholder="Título da postagem">
+                        </div>
+
+                        <div class="form__group">
+                            <label for="description">Descrição</label>
+                            <textarea name="description" id="description"
+                                placeholder="Descrição da postagem"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn--success">Enviar</button>
+                    </form>
+                </div>
+            </aside>
+        </div>
     </template>
 
     <!-- Vue.js CDN -->

@@ -1,10 +1,15 @@
 import Home from "./components/Home.js";
 import Post from "./components/Post.js";
+import Admin from "./components/Admin.js";
 
 const routes = [
     {
         path: "/",
         component: Home,
+    },
+    {
+        path: "/admin",
+        component: Admin,
     },
     {
         path: "/post/:id",

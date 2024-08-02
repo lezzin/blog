@@ -6,6 +6,7 @@ import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebas
 import Home from "./components/Home.js";
 import Post from "./components/Post.js";
 import Admin from "./components/Admin.js";
+import NotFound from "./components/NotFound.js";
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -38,10 +39,35 @@ const routes = [
             storage: storage
         }
     },
+    {
+        path: "/*",
+        component: NotFound
+    }
 ];
 
 const router = new VueRouter({
     routes
 });
 
-new Vue({ router }).$mount("#app");
+new Vue({
+    router,
+    data() {
+        return {
+            toast: {
+                opened: false,
+                status: '',
+                message: ''
+            },
+            showBackButton: false
+        }
+    },
+    watch: {
+        "toast": function () {
+            clearTimeout(this.toastTimeout);
+
+            this.toastTimeout = setTimeout(() => {
+                this.toast = { opened: false, status: '', message: '' }
+            }, 5000);
+        }
+    }
+}).$mount("#app");

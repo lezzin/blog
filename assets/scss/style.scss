@@ -1,17 +1,28 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 $primary-color: #25862a;
-
 $success-color: #25862a;
 $danger-color: #b93232;
 
-$primary-background: #fff;
-$secondary-background: #f5f5f5;
+$background-color: #fff;
+$border-color: #e9e9e9;
 
-$border-color: #ddd;
+$border-radius: 3px;
 
 $font-primary-color: #000;
 $font-secondary-color: #fff;
+
+$box-shadow-sm: 0 .125rem .25rem rgba(0, 0, 0, .075);
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
 
 * {
     margin: 0;
@@ -19,24 +30,14 @@ $font-secondary-color: #fff;
     box-sizing: border-box;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    color: $font-primary-color;
-    font-weight: normal;
-}
-
 html {
-    font-family: "Roboto", system-ui, sans-serif;
+    font-family: "Nunito", system-ui, sans-serif;
     scroll-behavior: smooth;
     font-size: 62.5%;
 }
 
 body {
-    background-color: $primary-background;
+    background-color: $background-color;
     color: $font-primary-color;
 }
 
@@ -70,19 +71,17 @@ button {
     gap: 0.6rem;
     font-size: 1.4rem;
     padding: 0.8rem 1.6rem;
+    border-radius: $border-radius;
 
     &--back {
         color: $primary-color;
-        align-items: flex-end;
-        margin-left: auto;
-        margin-bottom: 1rem;
+        align-items: center;
         padding: 0;
     }
 
     &--success {
         background: $success-color;
         color: $font-secondary-color;
-        border-radius: 5px;
         align-items: center;
         transition: background .3s ease;
 
@@ -95,7 +94,6 @@ button {
         background: lighten($success-color, 60%);
         border: 1px solid $success-color;
         color: $success-color;
-        border-radius: 5px;
         align-items: center;
         transition: background .3s ease;
 
@@ -107,7 +105,6 @@ button {
     &--danger {
         background: $danger-color;
         color: $font-secondary-color;
-        border-radius: 5px;
         align-items: center;
         transition: background .3s ease;
 
@@ -115,6 +112,73 @@ button {
             background: darken($danger-color, 10%);
         }
     }
+}
+
+.loader {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    margin: 2rem 0;
+
+    &__spinner {
+        width: 3rem;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        border: 3px solid $primary-color;
+        border-left-color: transparent;
+        animation: spin 1s linear infinite;
+    }
+}
+
+.toast {
+    border-radius: $border-radius;
+    position: fixed;
+    right: 2rem;
+    top: 2rem;
+    font-size: 1.6rem;
+    background: darken($background-color, 10%);
+    display: flex;
+    overflow: hidden;
+    transform: translateX(100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: all .3s ease;
+    box-shadow: $box-shadow-sm;
+
+    &.active {
+        opacity: 1;
+        transform: translateX(0%);
+    }
+
+    &__banner {
+        width: 1.5rem;
+        height: auto;
+
+        &--success {
+            background: $success-color;
+        }
+
+        &--danger {
+            background: $danger-color;
+        }
+    }
+
+    &__message {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 1rem 2rem 1rem 1rem;
+        white-space: nowrap;
+    }
+}
+
+.alert {
+    border-radius: $border-radius;
+    display: flex;
+    justify-content: center;
+    border: 1px solid $border-color;
+    padding: 1rem;
+    background: darken($background-color, 1.5%);
 }
 
 .modal {
@@ -137,9 +201,11 @@ button {
         max-width: 540px;
         max-height: 90%;
         overflow-y: auto;
-        background: $primary-background;
+        background: $background-color;
+        border: 1px solid $border-color;
+        box-shadow: $box-shadow-sm;
+        border-radius: $border-radius;
         padding: 2rem;
-        border-radius: 5px;
     }
 
     &__header {
@@ -175,6 +241,7 @@ button {
         input,
         textarea {
             border: 1px solid $border-color;
+            border-radius: $border-radius;
             padding: .8rem;
         }
     }
@@ -192,57 +259,144 @@ button {
     }
 }
 
-.mw {
+.header,
+main {
+    margin: 0 auto;
     width: 90%;
     max-width: 768px;
-    margin: 0 auto;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    height: 10vh;
+    flex-wrap: wrap;
+
+    &__greetings {
+        font-size: 2.4rem;
+    }
 }
 
 main {
     padding: 5rem 0 10rem 0;
-    min-height: 90vh;
+    min-height: 80vh;
     font-size: 1.4rem;
-}
 
-.presentation {
-    &__title {
-        font-size: 2.8rem;
-    }
-
-    &__description {
-        margin: 1rem 0 6rem 0;
-        font-size: 1.6rem;
-    }
-}
-
-.preview {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    flex-grow: 1;
-    gap: 1rem;
-
-    .post {
-        background: $secondary-background;
-        border: 1px solid $border-color;
-        padding: 2rem;
-        width: 100%;
-        flex-grow: 1;
-        transition: border-color .6s ease;
-
-        &:hover {
-            border-color: $primary-color;
-        }
+    .presentation {
+        display: grid;
+        gap: 1rem;
+        margin-bottom: 3rem;
 
         &__title {
-            font-size: 2.8rem;
+            font-size: 3.2rem;
+            margin-bottom: 1rem;
+        }
+
+        &__text {
+            font-size: 1.8rem;
+            color: lighten($font-primary-color, 30%);
+        }
+    }
+
+    .preview {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        flex-grow: 1;
+        gap: 1rem;
+
+        .post {
+            background: darken($background-color, 2%);
+            border: 1px solid $border-color;
+            box-shadow: $box-shadow-sm;
+            padding: 2rem;
+            width: 100%;
+            flex-grow: 1;
+
+            &__title {
+                font-size: 2.8rem;
+                font-weight: 500;
+            }
+
+            &__description {
+                font-size: 1.8rem;
+                margin-top: .5rem;
+                color: lighten($font-primary-color, 30%);
+            }
+
+            &__buttons {
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                margin-top: 3rem;
+            }
+        }
+    }
+
+    .view {
+        display: grid;
+        gap: 2rem;
+
+        &__title {
+            font-size: 3.2rem;
             font-weight: 600;
         }
 
-        &__description {
-            font-size: 1.8rem;
-            margin-top: 1rem;
+        &__footer {
+            margin-top: 2rem;
+        }
+
+        &__content {
+            display: grid;
+            gap: 2rem;
+            font-size: 1.6rem;
+
+            img {
+                border: 1px solid $border-color;
+                width: 100%;
+                aspect-ratio: 16/9;
+                margin: 0 auto;
+                object-fit: cover;
+            }
+
+            ul,
+            ol {
+                margin-left: 4rem;
+            }
+
+            h1 {
+                font-size: 2.8rem;
+            }
+
+            h2 {
+                font-size: 2.4rem;
+            }
+
+            h3 {
+                font-size: 2rem;
+            }
+
+            a {
+                color: $primary-color;
+
+                &:hover {
+                    color: darken($primary-color, 10%);
+                }
+            }
+        }
+    }
+
+    .admin {
+        &__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
         }
 
         &__buttons {
@@ -252,41 +406,29 @@ main {
             gap: 0.5rem;
             margin-top: 3rem;
         }
-    }
-}
 
-.view {
-    display: grid;
-    gap: 2rem;
-
-    &__title {
-        font-size: 3.2rem;
-        font-weight: 600;
+        &__title {
+            font-size: 2.8rem;
+            font-weight: 500;
+        }
     }
 
-    &__footer {
-        margin-top: 2rem;
-    }
-
-    &__content {
+    .not-found {
         display: grid;
-        gap: 2rem;
-        font-size: 1.8rem;
+        place-items: center;
+        text-align: center;
 
-        img {
-            border: 1px solid $border-color;
-            width: 100%;
-            aspect-ratio: 16/9;
-            margin: 0 auto;
-            object-fit: cover;
+        &__title {
+            font-size: 8rem;
+            font-weight: normal;
         }
 
-        ul,
-        ol {
-            margin-left: 4rem;
+        &__text {
+            font-size: 3rem;
+            margin: .5rem 0 1rem 0;
         }
 
-        a {
+        &__link {
             color: $primary-color;
 
             &:hover {
@@ -296,28 +438,18 @@ main {
     }
 }
 
-.admin {
-    &__header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        margin-bottom: 2rem;
-    }
-
-    &__title {
-        font-size: 2.8rem;
-        font-weight: 500;
-    }
-}
-
 .footer {
-    background: $secondary-background;
-    text-align: center;
-    padding: 2rem 0;
+    display: grid;
+    place-items: center;
+    height: 10vh;
+    background: darken($background-color, 3%);
     font-size: 1.4rem;
 
     a {
-        text-decoration: underline;
+        color: $primary-color;
+
+        &:hover {
+            color: darken($primary-color, 10%);
+        }
     }
 }

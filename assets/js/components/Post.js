@@ -1,5 +1,6 @@
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import "https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js";
+import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
+import { PAGE_TITLES, FIRESTORE_COLLECTION } from "../utils/variables.js";
 
 const Post = {
     template: "#post-template",
@@ -11,13 +12,20 @@ const Post = {
                 title: '',
                 content: ''
             },
-            markdown: null
+            loadingPost: true,
         };
+    },
+    mounted() {
+        this.$root.showBackButton = true;
+        window.scrollTo({ top: 0 });
+
+        const id = this.$route.params.id;
+        this.fetchPost(id);
     },
     methods: {
         async fetchPost(postId) {
             try {
-                const postDoc = doc(this.db, 'posts', postId);
+                const postDoc = doc(this.db, FIRESTORE_COLLECTION, postId);
                 const docSnap = await getDoc(postDoc);
 
                 if (docSnap.exists()) {
@@ -26,16 +34,24 @@ const Post = {
                         title: docSnap.data().title,
                         content: docSnap.data().content,
                     };
-                    document.title = `Blog | ${this.post.title}`;
+
+                    document.title = PAGE_TITLES.postagem(this.post.title);
                 } else {
-                    console.error('Post não encontrado');
+                    this.$router.push("/");
                 }
             } catch (error) {
-                console.error('Erro ao recuperar post:', error);
+                console.error('Erro ao recuperar postagem: ', error);
+                this.$root.toast = {
+                    opened: true,
+                    status: 'danger',
+                    'message': 'Erro ao recuperar postagem. Verifique o console.'
+                };
+            } finally {
+                this.loadingPost = false;
             }
         },
         renderMarkdown(markdown) {
-            return this.markdown.markdown(markdown);
+            return marked.parse(markdown);
         },
         share() {
             const currentUrl = window.location.href;
@@ -44,16 +60,14 @@ const Post = {
                 title: 'Blog de Wellyngton Souza',
                 text: 'Compartilhar postagem do blog',
                 url: currentUrl,
-            }).catch(error => console.error('Erro ao compartilhar:', error));
+            });
         }
     },
-    mounted() {
-        const id = this.$route.params.id;
-        window.scrollTo({ top: 0 });
-
-        this.markdown = new SimpleMDE({ element: document.getElementById("content") });
-        this.fetchPost(id);
-    },
+    watch: {
+        "$route.params.id": function(id) {
+            this.fetchPost(id);
+        }
+    }
 };
 
 export default Post;

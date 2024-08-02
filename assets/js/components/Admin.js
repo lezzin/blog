@@ -1,5 +1,7 @@
 import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import { getAuth, signOut, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { FIRESTORE_COLLECTION, PAGE_TITLES } from "../utils/variables.js";
 import "https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js";
 
 const Admin = {
@@ -12,26 +14,93 @@ const Admin = {
             addFormMessages: {
                 title: '',
                 description: '',
+                content: '',
             },
             addingPost: {
                 title: '',
                 description: '',
-                content: '',
             },
             editingPost: {
                 id: '',
                 title: '',
                 description: '',
-                content: '',
             },
             posts: [],
             markdown: {
                 add: null,
                 edit: null
+            },
+            loadingPosts: false,
+            user: {
+                email: '',
+                password: '',
+                loggedIn: false
             }
         };
     },
+    mounted() {
+        document.title = PAGE_TITLES.admin;
+        window.scrollTo({ top: 0 });
+        this.$root.showBackButton = true;
+
+        onAuthStateChanged(getAuth(), user => {
+            if (user) {
+                this.user.loggedIn = true;
+                this.init();
+            } else {
+                this.user.loggedIn = false;
+            }
+        });
+    },
     methods: {
+        async login() {
+            const auth = getAuth();
+            try {
+                await signInWithEmailAndPassword(auth, this.user.email, this.user.password);
+                this.user.loggedIn = true;
+                this.user.email = '';
+                this.user.password = '';
+                this.init();
+            } catch (error) {
+                console.error('Erro ao fazer login:', error);
+                let errorMessage = 'Erro ao fazer login.';
+
+
+                switch (error.code) {
+                    case 'auth/invalid-credential':
+                        errorMessage = 'Credenciais inválidas.';
+                        break;
+                    default:
+                        errorMessage = 'Ocorreu um erro ao fazer login. Verifique o console.';
+                        break;
+                }
+
+                this.$root.toast = {
+                    opened: true,
+                    status: 'danger',
+                    message: errorMessage
+                };
+            }
+        },
+        async logout() {
+            const auth = getAuth();
+            try {
+                await signOut(auth);
+                this.user = { email: '', password: '', loggedIn: false };
+                this.$router.push("/");
+            } catch (error) {
+                console.error('Erro ao fazer logout:', error);
+                this.$root.toast = {
+                    opened: true,
+                    status: 'danger',
+                    message: 'Erro ao fazer logout. Verifique o console.'
+                };
+            }
+        },
+        init() {
+            this.initializeMarkdownEditors();
+            this.fetchPosts();
+        },
         openAddModal() {
             this.modalAddOpened = true;
         },
@@ -46,26 +115,6 @@ const Admin = {
         closeEditModal() {
             this.modalEditOpened = false;
         },
-        async editPost() {
-            try {
-                const { id, title, description, content } = this.editingPost;
-                const postDoc = doc(this.db, 'posts', id);
-                await updateDoc(postDoc, {
-                    title,
-                    description,
-                    content: this.markdown.edit.value()
-                });
-                
-                this.posts = this.posts.map(post => 
-                    post.id === id ? { ...post, title, description, content } : post
-                );
-                
-                alert('Post editado com sucesso!');
-            } catch (error) {
-                console.error('Erro ao editar post:', error);
-                alert('Erro ao editar post. Verifique o console para mais detalhes.');
-            }
-        },
         async addPost() {
             if (this.addingPost.title.length > 50) {
                 this.addFormMessages.title = "O título deve conter no máximo 50 caracteres";
@@ -77,18 +126,96 @@ const Admin = {
                 return;
             }
 
+            if (this.markdown.add.value() === '') {
+                this.addFormMessages.content = "Preencha o conteúdo da postagem";
+                return;
+            }
+
             try {
-                await addDoc(collection(this.db, 'posts'), {
+                await addDoc(collection(this.db, FIRESTORE_COLLECTION), {
                     title: this.addingPost.title,
                     description: this.addingPost.description,
                     content: this.markdown.add.value()
                 });
 
-                this.resetPostForm();
-                alert('Post adicionado com sucesso!');
+                this.resetAddPostForm();
+                this.fetchPosts();
+
+                this.$root.toast = {
+                    opened: true,
+                    status: 'success',
+                    message: 'Postagem adicionada com sucesso!'
+                };
             } catch (error) {
-                console.error('Erro ao adicionar post:', error);
-                alert('Erro ao adicionar post. Verifique o console para mais detalhes.');
+                console.error('Erro ao adicionar postagem: ', error);
+                this.$root.toast = {
+                    opened: true,
+                    status: 'danger',
+                    message: 'Erro ao adicionar postagem. Verifique o console.'
+                };
+            }
+        },
+        async editPost() {
+            try {
+                const { id, title, description } = this.editingPost;
+                const newContent = this.markdown.edit.value();
+                const postDoc = doc(this.db, FIRESTORE_COLLECTION, id);
+                const oldPost = this.posts.find(post => post.id === id);
+
+                const oldImageUrls = this.extractImageUrls(oldPost.content);
+                const newImageUrls = this.extractImageUrls(newContent);
+
+                const imagesToRemove = oldImageUrls.filter(url => !newImageUrls.includes(url));
+                await this.deleteImagesFromStorage(imagesToRemove);
+
+                await updateDoc(postDoc, {
+                    title,
+                    description,
+                    content: newContent
+                });
+
+                this.posts = this.posts.map(post =>
+                    post.id === id ? { ...post, title, description, content: newContent } : post
+                );
+
+                this.resetEditPostForm();
+
+                this.$root.toast = {
+                    opened: true,
+                    status: 'success',
+                    message: 'Postagem editada com sucesso!'
+                };
+            } catch (error) {
+                console.error('Erro ao editar postagem: ', error);
+                this.$root.toast = {
+                    opened: true,
+                    status: 'danger',
+                    message: 'Erro ao editar postagem. Verifique o console.'
+                };
+            }
+        },
+        async deletePost(postToDelete) {
+            if (!confirm("Realmente deseja excluir a postagem? Essa ação é irreversível!")) return;
+
+            try {
+                const imageUrls = this.extractImageUrls(postToDelete.content);
+                await this.deleteImagesFromStorage(imageUrls);
+
+                await deleteDoc(doc(this.db, FIRESTORE_COLLECTION, postToDelete.id));
+                this.posts = this.posts.filter(post => post.id !== postToDelete.id);
+
+                this.$root.toast = {
+                    opened: true,
+                    status: 'success',
+                    message: 'Postagem excluída com sucesso.'
+                };
+            } catch (error) {
+                console.error('Erro ao excluir postagem: ', error);
+                this.$root.toast = {
+                    opened: true,
+                    status: 'danger',
+                    message: 'Erro ao excluir postagem. Verifique o console.'
+                };
             }
         },
         async handleDrop(instance, event) {
@@ -97,13 +224,25 @@ const Admin = {
             if (file) {
                 const storageReference = storageRef(this.storage, `images/${file.name}`);
                 await uploadBytes(storageReference, file);
+
                 const fileUrl = await getDownloadURL(storageReference);
                 instance.replaceRange(`![${file.name}](${fileUrl})`, instance.getCursor());
             }
         },
+        resetAddPostForm() {
+            this.addingPost = { title: '', description: '' };
+            this.addFormMessages = { title: '', description: '', content: '' };
+            this.markdown.add.value('');
+            this.closeAddModal();
+        },
+        resetEditPostForm() {
+            this.editingPost = { title: '', description: '' };
+            this.markdown.edit.value('');
+            this.closeEditModal();
+        },
         async fetchPosts() {
             try {
-                const querySnapshot = await getDocs(collection(this.db, 'posts'));
+                const querySnapshot = await getDocs(collection(this.db, FIRESTORE_COLLECTION));
                 this.posts = querySnapshot.docs.map(doc => ({
                     id: doc.id,
                     title: doc.data().title,
@@ -111,23 +250,15 @@ const Admin = {
                     content: doc.data().content,
                 }));
             } catch (error) {
-                console.error('Erro ao recuperar postagens:', error);
+                console.error('Erro ao recuperar postagens: ', error);
+                this.$root.toast = {
+                    opened: true,
+                    status: 'danger',
+                    message: 'Erro ao recuperar postagens. Verifique o console.'
+                };
+            } finally {
+                this.loadingPosts = false;
             }
-        },
-        async deletePost(postId) {
-            try {
-                await deleteDoc(doc(this.db, 'posts', postId));
-                this.posts = this.posts.filter(post => post.id !== postId);
-                alert('Post excluído com sucesso!');
-            } catch (error) {
-                console.error('Erro ao excluir post:', error);
-                alert('Erro ao excluir post. Verifique o console para mais detalhes.');
-            }
-        },
-        resetPostForm() {
-            this.addingPost = { title: '', description: '', content: '' };
-            this.addFormMessages = { title: '', description: '' };
-            this.markdown.add.value('');
         },
         initializeMarkdownEditors() {
             this.markdown.add = new SimpleMDE({
@@ -142,12 +273,28 @@ const Admin = {
             });
             this.markdown.edit.codemirror.on("drop", this.handleDrop);
         },
-    },
-    mounted() {
-        document.title = "Blog | Admin";
-        window.scrollTo({ top: 0 });
-        this.initializeMarkdownEditors();
-        this.fetchPosts();
+        extractImageUrls(content) {
+            const urlRegex = /!\[.*?\]\((https:\/\/firebasestorage\.googleapis\.com\/.*?)\)/g;
+            let urls = [];
+            let match;
+
+            while ((match = urlRegex.exec(content)) !== null) {
+                urls.push(match[1]);
+            }
+
+            return urls;
+        },
+        async deleteImagesFromStorage(urls) {
+            const promises = urls.map(async (url) => {
+                const storagePath = url.split("/o/")[1].split("?")[0];
+                const decodedPath = decodeURIComponent(storagePath);
+                const imageRef = storageRef(this.storage, decodedPath);
+
+                await deleteObject(imageRef);
+            });
+
+            await Promise.all(promises);
+        },
     },
 };
 

@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
     <link rel="stylesheet" href="./assets/css/style.css">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <title>Blog</title>
@@ -33,54 +34,25 @@
                     dolore quasi assumenda at sit natus minus.
                 </p>
             </div>
-            <nav class="preview">
-                <router-link class="post" to="post/1">
-                    <h2 class="post__title">Título da postagem</h2>
-                    <p class="post__description">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Animi, quia.
-                    </p>
-
-                    <div class="post__tags">
-                        <span class="tag">HTML</span>
-                        <span class="tag">CSS</span>
-                        <span class="tag">JavaScript</span>
-                    </div>
+            <nav class="preview" v-if="posts.length > 0">
+                <router-link v-for="post in posts" class="post" :to="'post/' + post.id">
+                    <h2 class="post__title">{{ post.title }}</h2>
+                    <p class="post__description">{{ post.description }}</p>
                 </router-link>
             </nav>
+            <p v-else>Nenhuma postagem encontrada.</p>
         </div>
     </template>
 
     <template id="post-template">
         <div>
-            <router-link to="/" class="btn btn--back"><i class="bi bi-arrow-left"></i> Voltar</router-link>
+            <a href="javascript:history.back()" class="btn btn--back"><i class="bi bi-arrow-left"></i> Voltar</a>
+
+            <textarea id="content" style="display: none;"></textarea>
 
             <section class="view">
-                <h2 class="view__title">Postagem {{ post_id }}</h2>
-
-                <img src="https://placehold.co/768x400" alt="Imagem da postagem">
-
-                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. A, et?</p>
-                <p>
-                    Lorem ipsum dolor, sit amet consectetur adipisicing elit. Lorem ipsum dolor sit amet consectetur
-                    adipisicing elit. Dignissimos quibusdam voluptas temporibus illum architecto? Nemo iure impedit
-                    distinctio id rerum sapiente est! Harum, nisi. Officiis quis illo rerum sit recusandae quaerat nulla
-                    sint inventore nam explicabo, consequuntur numquam molestiae excepturi assumenda perspiciatis
-                    quibusdam
-                    enim dignissimos? Recusandae nisi minus itaque magni?
-                </p>
-
-                <h3>Lorem, ipsum dolor.</h3>
-
-                <iframe src="https://www.youtube.com/embed/CD-JJe1x_2U?si=XMj4GhlLDKsemnDF" title="YouTube video player"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-                <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium iusto fugit, ea quis quo porro
-                    vitae dignissimos inventore hic corporis?
-                </p>
-
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque!</p>
+                <h2 class="view__title">{{ post.title }}</h2>
+                <div class="view__content" v-html="renderMarkdown(post.content)"></div>
 
                 <div class="view__footer">
                     <a class="btn btn--success" @click="share" @v-if="navigator.share !== undefined"
@@ -97,53 +69,110 @@
             <header class="admin__header">
                 <h2 class="admin__title">Postagens</h2>
 
-                <button type="button" class="btn btn--success" title="Adicionar nova postagem" @click="openModal">
+                <button type="button" class="btn btn--success" title="Adicionar nova postagem" @click="openAddModal">
                     <i class="bi bi-plus"></i> Nova postagem
                 </button>
             </header>
 
-            <nav class="preview">
-                <router-link class="post" to="edit/post/1">
-                    <h2 class="post__title">Título da postagem</h2>
-                    <p class="post__description">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Animi, quia.
-                    </p>
+            <div class="preview" v-if="posts.length > 0">
+                <section v-for="post in posts" :key="post.id" class="post">
+                    <h2 class="post__title">{{ post.title }}</h2>
+                    <p class="post__description">{{ post.description }}</p>
 
-                    <div class="post__tags">
-                        <span class="tag">HTML</span>
-                        <span class="tag">CSS</span>
-                        <span class="tag">JavaScript</span>
+                    <div class="post__buttons">
+                        <router-link :to="'post/' + post.id" class="btn btn--success" role="button">
+                            <i class="bi bi-eye"></i> Visualizar
+                        </router-link>
+                        <button type="button" class="btn btn--out-success" title="Editar postagem"
+                            @click="openEditModal(post)">
+                            <i class="bi bi-pencil"></i> Editar
+                        </button>
+                        <button type="button" class="btn btn--danger" title="Excluir postagem"
+                            @click="deletePost(post.id)">
+                            <i class="bi bi-trash"></i> Excluir
+                        </button>
                     </div>
-                </router-link>
-            </nav>
+                </section>
+            </div>
+            <p v-else>Nenhuma postagem encontrada.</p>
 
-            <aside :class="['modal', modalOpened && 'active']">
+            <aside :class="['modal', modalAddOpened && 'active']">
                 <div class="modal__dialog">
-                    <button type="button" class="btn modal__close" title="Fechar modal" @click="closeModal">
-                        <i class="bi bi-x"></i>
-                    </button>
+                    <div class="modal__header">
+                        <h3 class="modal__title">Adicionar nova postagem</h3>
+                        <button type="button" class="btn modal__close" title="Fechar modal" @click="closeAddModal">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </div>
 
-                    <form action="#" class="form">
-                        <h3 class="form__title">Adicionar nova postagem</h3>
+                    <div class="modal__body">
+                        <form class="form" @submit.prevent="addPost">
+                            <div class="form__group">
+                                <label for="title">Título</label>
+                                <input type="text" v-model="addingPost.title" placeholder="Título da postagem" required>
+                                <span class="form__helper" v-if="addFormMessages.title">
+                                    {{ addFormMessages.title }}
+                                </span>
+                            </div>
 
-                        <div class="form__group">
-                            <label for="title">Título</label>
-                            <input type="text" name="title" id="title" placeholder="Título da postagem">
-                        </div>
+                            <div class="form__group">
+                                <label for="description">Descrição</label>
+                                <input type="text" v-model="addingPost.description" placeholder="Descrição da postagem"
+                                    required>
+                                <span class="form__helper" v-if="addFormMessages.description">
+                                    {{ addFormMessages.description }}
+                                </span>
+                            </div>
 
-                        <div class="form__group">
-                            <label for="description">Descrição</label>
-                            <textarea name="description" id="description"
-                                placeholder="Descrição da postagem"></textarea>
-                        </div>
+                            <div class="form__group">
+                                <label for="content">Conteúdo (Markdown permitido)</label>
+                                <textarea id="add-content" v-model="addingPost.content"
+                                    placeholder="Conteúdo da postagem"></textarea>
+                            </div>
 
-                        <button type="submit" class="btn btn--success">Enviar</button>
-                    </form>
+                            <button type="submit" class="btn btn--success">Adicionar</button>
+                        </form>
+                    </div>
+                </div>
+            </aside>
+
+            <aside :class="['modal', modalEditOpened && 'active']">
+                <div class="modal__dialog">
+                    <div class="modal__header">
+                        <h3 class="modal__title">Editar postagem</h3>
+                        <button type="button" class="btn modal__close" title="Fechar modal" @click="closeEditModal">
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </div>
+
+                    <div class="modal__body">
+                        <form class="form" @submit.prevent="editPost">
+                            <div class="form__group">
+                                <label for="title">Título</label>
+                                <input type="text" v-model="editingPost.title" placeholder="Título da postagem"
+                                    required>
+                            </div>
+
+                            <div class="form__group">
+                                <label for="description">Descrição</label>
+                                <input type="text" v-model="editingPost.description" placeholder="Descrição da postagem"
+                                    required>
+                            </div>
+
+                            <div class="form__group">
+                                <label for="content">Conteúdo (Markdown permitido)</label>
+                                <textarea id="edit-content" v-model="editingPost.content"
+                                    placeholder="Conteúdo da postagem"></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn--success">Editar</button>
+                        </form>
+                    </div>
                 </div>
             </aside>
         </div>
     </template>
 
-    <!-- Vue.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue-router@3"></script>
     <script type="module" src="./assets/js/App.js"></script>

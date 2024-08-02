@@ -33,6 +33,9 @@ a {
   color: inherit;
   text-decoration: none;
 }
+a.btn {
+  padding: 0.9rem 1.6rem;
+}
 
 input,
 textarea,
@@ -50,6 +53,8 @@ button {
 
 .btn {
   display: flex;
+  justify-content: center;
+  text-align: center;
   width: -moz-fit-content;
   width: fit-content;
   gap: 0.6rem;
@@ -79,7 +84,7 @@ button {
   transition: background 0.3s ease;
 }
 .btn--out-success:hover {
-  background: #bdedc0;
+  background: #d1f2d3;
 }
 .btn--danger {
   background: #b93232;
@@ -90,6 +95,16 @@ button {
 .btn--danger:hover {
   background: #912727;
 }
+.btn--out-danger {
+  background: #fbefef;
+  border: 1px solid #b93232;
+  color: #b93232;
+  align-items: center;
+  transition: background 0.3s ease;
+}
+.btn--out-danger:hover {
+  background: #f5dbdb;
+}
 
 .loader {
   display: grid;
@@ -98,11 +113,11 @@ button {
   margin: 2rem 0;
 }
 .loader__spinner {
-  width: 3rem;
+  width: 2.8rem;
   aspect-ratio: 1;
   border-radius: 50%;
   border: 3px solid #25862a;
-  border-left-color: transparent;
+  border-left-color: #e5f8e6;
   animation: spin 1s linear infinite;
 }
 
@@ -112,7 +127,7 @@ button {
   right: 2rem;
   top: 2rem;
   font-size: 1.6rem;
-  background: #e6e6e6;
+  background: whitesmoke;
   display: flex;
   overflow: hidden;
   transform: translateX(100%);
@@ -177,20 +192,8 @@ button {
   border-radius: 3px;
   padding: 2rem;
 }
-.modal__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 2rem;
-  margin-bottom: 2rem;
-}
-.modal__close {
-  font-size: 1.8rem;
-  padding: 0;
-}
 .modal__title {
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
   font-weight: 500;
   font-size: 2.6rem;
 }
@@ -214,30 +217,52 @@ button {
   font-size: 1.2rem;
   color: #b93232;
 }
-.form button[type=submit] {
+.form__footer {
+  display: grid;
+  gap: 0.5rem;
   margin-top: 2rem;
+}
+.form__footer > * {
   width: auto;
   justify-content: center;
   padding: 0.8rem;
 }
 
-.header,
-main {
+.container {
   margin: 0 auto;
   width: 90%;
   max-width: 768px;
 }
 
 .header {
+  height: 10vh;
+  background: #e6e6e6;
+  position: sticky;
+  top: 0;
+  border-bottom: 1px solid #e9e9e9;
+}
+.header .container {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 2rem;
-  height: 10vh;
   flex-wrap: wrap;
+  gap: 2rem;
+  height: 100%;
 }
 .header__greetings {
   font-size: 2.4rem;
+}
+.header__nav {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.header__nav a {
+  font-size: 2rem;
+  transition: color 0.3s ease;
+}
+.header__nav a:hover {
+  color: #25862a;
 }
 
 main {
@@ -253,6 +278,7 @@ main .presentation {
 main .presentation__title {
   font-size: 3.2rem;
   margin-bottom: 1rem;
+  font-weight: normal;
 }
 main .presentation__text {
   font-size: 1.8rem;
@@ -269,7 +295,6 @@ main .preview {
 main .preview .post {
   background: #fafafa;
   border: 1px solid #e9e9e9;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
   padding: 2rem;
   width: 100%;
   flex-grow: 1;
@@ -280,15 +305,32 @@ main .preview .post__title {
 }
 main .preview .post__description {
   font-size: 1.8rem;
-  margin-top: 0.5rem;
+  margin-top: 0.3rem;
   color: #4d4d4d;
+}
+main .preview .post__date {
+  font-size: 1.2rem;
+  color: gray;
+  margin-top: 1rem;
 }
 main .preview .post__buttons {
   display: flex;
   align-items: center;
+  width: 100%;
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-top: 3rem;
+}
+main .preview .post__buttons button:last-of-type {
+  margin-left: auto;
+}
+@media (width <= 768px) {
+  main .preview .post__buttons button:last-of-type {
+    margin-left: initial;
+  }
+  main .preview .post__buttons > * {
+    width: 100%;
+  }
 }
 main .view {
   display: grid;
@@ -299,14 +341,21 @@ main .view__title {
   font-weight: 600;
 }
 main .view__footer {
+  border-top: 1px solid #e9e9e9;
   margin-top: 2rem;
+  padding-top: 2rem;
+}
+main .view__footer p {
+  font-size: 1.8rem;
+  margin-bottom: 0.6rem;
 }
 main .view__content {
   display: grid;
   gap: 2rem;
   font-size: 1.6rem;
 }
-main .view__content img {
+main .view__content img,
+main .view__content iframe {
   border: 1px solid #e9e9e9;
   width: 100%;
   aspect-ratio: 16/9;
@@ -338,6 +387,7 @@ main .admin__header {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
+  gap: 1rem;
   margin-bottom: 2rem;
 }
 main .admin__buttons {
@@ -345,11 +395,19 @@ main .admin__buttons {
   align-items: center;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-top: 3rem;
+}
+@media (width <= 768px) {
+  main .admin__buttons {
+    width: 100%;
+  }
+  main .admin__buttons > * {
+    flex-grow: 1;
+  }
 }
 main .admin__title {
   font-size: 2.8rem;
   font-weight: 500;
+  margin-bottom: 0;
 }
 main .not-found {
   display: grid;

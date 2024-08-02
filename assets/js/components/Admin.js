@@ -41,7 +41,6 @@ const Admin = {
     mounted() {
         document.title = PAGE_TITLES.admin;
         window.scrollTo({ top: 0 });
-        this.$root.showBackButton = true;
 
         onAuthStateChanged(getAuth(), user => {
             if (user) {
@@ -132,10 +131,19 @@ const Admin = {
             }
 
             try {
+                const currentTime = new Date().toLocaleDateString("pt-BR", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                });
+
                 await addDoc(collection(this.db, FIRESTORE_COLLECTION), {
                     title: this.addingPost.title,
                     description: this.addingPost.description,
-                    content: this.markdown.add.value()
+                    content: this.markdown.add.value(),
+                    created_at: currentTime
                 });
 
                 this.resetAddPostForm();
@@ -248,6 +256,7 @@ const Admin = {
                     title: doc.data().title,
                     description: doc.data().description,
                     content: doc.data().content,
+                    created_at: doc.data().created_at
                 }));
             } catch (error) {
                 console.error('Erro ao recuperar postagens: ', error);

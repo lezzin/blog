@@ -13,8 +13,6 @@ const Home = {
     },
     mounted: function () {
         document.title = PAGE_TITLES.home;
-
-        this.$root.showBackButton = false;
         window.scrollTo({ top: 0 });
 
         this.fetchPosts();
@@ -27,6 +25,7 @@ const Home = {
                     id: doc.id,
                     title: doc.data().title,
                     description: doc.data().description,
+                    created_at: doc.data().created_at,
                 }));
             } catch (error) {
                 console.error('Erro ao recuperar postagens: ', error);

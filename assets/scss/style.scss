@@ -49,6 +49,10 @@ img {
 a {
     color: inherit;
     text-decoration: none;
+
+    &.btn {
+        padding: 0.9rem 1.6rem;
+    }
 }
 
 input,
@@ -67,6 +71,8 @@ button {
 
 .btn {
     display: flex;
+    justify-content: center;
+    text-align: center;
     width: fit-content;
     gap: 0.6rem;
     font-size: 1.4rem;
@@ -98,7 +104,7 @@ button {
         transition: background .3s ease;
 
         &:hover {
-            background: lighten($success-color, 50%);
+            background: lighten($success-color, 55%);
         }
     }
 
@@ -112,6 +118,18 @@ button {
             background: darken($danger-color, 10%);
         }
     }
+
+    &--out-danger {
+        background: lighten($danger-color, 50%);
+        border: 1px solid $danger-color;
+        color: $danger-color;
+        align-items: center;
+        transition: background .3s ease;
+
+        &:hover {
+            background: lighten($danger-color, 45%);
+        }
+    }
 }
 
 .loader {
@@ -121,11 +139,11 @@ button {
     margin: 2rem 0;
 
     &__spinner {
-        width: 3rem;
+        width: 2.8rem;
         aspect-ratio: 1;
         border-radius: 50%;
         border: 3px solid $primary-color;
-        border-left-color: transparent;
+        border-left-color: lighten($primary-color, 60%);
         animation: spin 1s linear infinite;
     }
 }
@@ -136,7 +154,7 @@ button {
     right: 2rem;
     top: 2rem;
     font-size: 1.6rem;
-    background: darken($background-color, 10%);
+    background: darken($background-color, 4%);
     display: flex;
     overflow: hidden;
     transform: translateX(100%);
@@ -208,22 +226,8 @@ button {
         padding: 2rem;
     }
 
-    &__header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        gap: 2rem;
-        margin-bottom: 2rem;
-    }
-
-    &__close {
-        font-size: 1.8rem;
-        padding: 0;
-    }
-
     &__title {
-        margin-bottom: 1rem;
+        margin-bottom: 2rem;
         font-weight: 500;
         font-size: 2.6rem;
     }
@@ -251,31 +255,58 @@ button {
         color: $danger-color;
     }
 
-    button[type="submit"] {
+    &__footer {
+        display: grid;
+        gap: 0.5rem;
         margin-top: 2rem;
-        width: auto;
-        justify-content: center;
-        padding: .8rem;
+
+        >* {
+            width: auto;
+            justify-content: center;
+            padding: .8rem;
+        }
     }
 }
 
-.header,
-main {
+.container {
     margin: 0 auto;
     width: 90%;
     max-width: 768px;
 }
 
 .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 2rem;
     height: 10vh;
-    flex-wrap: wrap;
+    background: darken($background-color, 10%);
+    position: sticky;
+    top: 0;
+    border-bottom: 1px solid $border-color;
+
+    .container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 2rem;
+        height: 100%;
+    }
 
     &__greetings {
         font-size: 2.4rem;
+    }
+
+    &__nav {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+
+        a {
+            font-size: 2rem;
+            transition: color .3s ease;
+
+            &:hover {
+                color: $primary-color;
+            }
+        }
     }
 }
 
@@ -292,6 +323,7 @@ main {
         &__title {
             font-size: 3.2rem;
             margin-bottom: 1rem;
+            font-weight: normal;
         }
 
         &__text {
@@ -311,7 +343,6 @@ main {
         .post {
             background: darken($background-color, 2%);
             border: 1px solid $border-color;
-            box-shadow: $box-shadow-sm;
             padding: 2rem;
             width: 100%;
             flex-grow: 1;
@@ -323,16 +354,37 @@ main {
 
             &__description {
                 font-size: 1.8rem;
-                margin-top: .5rem;
+                margin-top: .3rem;
                 color: lighten($font-primary-color, 30%);
+            }
+
+            &__date {
+                font-size: 1.2rem;
+                color: lighten($font-primary-color, 50%);
+                margin-top: 1rem;
             }
 
             &__buttons {
                 display: flex;
                 align-items: center;
+                width: 100%;
                 flex-wrap: wrap;
                 gap: 0.5rem;
                 margin-top: 3rem;
+
+                button:last-of-type {
+                    margin-left: auto;
+                }
+
+                @media(width <=768px) {
+                    button:last-of-type {
+                        margin-left: initial;
+                    }
+
+                    >* {
+                        width: 100%;
+                    }
+                }
             }
         }
     }
@@ -347,7 +399,14 @@ main {
         }
 
         &__footer {
+            border-top: 1px solid $border-color;
             margin-top: 2rem;
+            padding-top: 2rem;
+
+            p {
+                font-size: 1.8rem;
+                margin-bottom: 0.6rem;
+            }
         }
 
         &__content {
@@ -355,7 +414,8 @@ main {
             gap: 2rem;
             font-size: 1.6rem;
 
-            img {
+            img,
+            iframe {
                 border: 1px solid $border-color;
                 width: 100%;
                 aspect-ratio: 16/9;
@@ -396,6 +456,7 @@ main {
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
+            gap: 1rem;
             margin-bottom: 2rem;
         }
 
@@ -404,12 +465,20 @@ main {
             align-items: center;
             flex-wrap: wrap;
             gap: 0.5rem;
-            margin-top: 3rem;
+
+            @media(width <=768px) {
+                width: 100%;
+
+                >* {
+                    flex-grow: 1;
+                }
+            }
         }
 
         &__title {
             font-size: 2.8rem;
             font-weight: 500;
+            margin-bottom: 0;
         }
     }
 

@@ -14,18 +14,26 @@
 <body>
     <div id="app">
         <header class="header">
-            <router-link class="header__greetings" to="/">Blog</router-link>
-            <a href="javascript:history.back()" v-if="showBackButton" class="btn btn--back">
-                <i class="bi bi-arrow-left"></i> Voltar
-            </a>
+            <div class="container">
+                <router-link class="header__greetings" to="/">Blog</router-link>
+
+                <nav class="header__nav">
+                    <a href="https://github.com" target="_blank"><i class="bi bi-github"></i></a>
+                    <a href="https://instagram.com" target="_blank"><i class="bi bi-instagram"></i></a>
+                    <a href="https://x.com" target="_blank"><i class="bi bi-twitter"></i></a>
+                    <a href="https://youtube.com" target="_blank"><i class="bi bi-youtube"></i></a>
+                </nav>
+            </div>
         </header>
 
         <main>
-            <router-view></router-view>
+            <div class="container">
+                <router-view></router-view>
+            </div>
         </main>
 
         <footer class="footer">
-            <p>&copy; <a href="https://lezzin.github.io" target="_blank">Lezzin</a> & Wellyngton Souza</p>
+            <p>&copy; <a href="https://lezzin.github.io" target="_blank">Leandro Adrian</a> & Wellyngton Souza</p>
         </footer>
 
         <aside :class="['toast', toast.opened && 'active']">
@@ -38,7 +46,7 @@
     <template id="home-template">
         <div>
             <div class="presentation">
-                <h2 class="presentation__title">Olá, sou Wellyngton Souza</h2>
+                <h2 class="presentation__title">Olá, sou Wellyngton Souza 👋</h2>
                 <p class="presentation__text">
                     Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam aperiam quo debitis inventore
                     voluptatum harum doloribus placeat veritatis vel qui.
@@ -58,6 +66,7 @@
                     <router-link v-for="post in posts" class="post" :to="'post/' + post.id">
                         <h2 class="post__title">{{ post.title }}</h2>
                         <p class="post__description">{{ post.description }}</p>
+                        <p class="post__date">Publicado em: {{ post.created_at }}</p>
                     </router-link>
                 </nav>
                 <div class="alert" v-else>Nenhuma postagem encontrada.</div>
@@ -74,10 +83,12 @@
             <div class="view__content" v-html="renderMarkdown(post.content)"></div>
 
             <div class="view__footer">
-                <a class="btn btn--success" @click="share" @v-if="navigator.share !== undefined"
-                    href="javascript:void(0)" title="Compartilhar postagem">
+                <p>Gostou da postagem? Compartilhe com seus amigos!</p>
+
+                <button type="button" class="btn btn--success" @click="share" @v-if="navigator.share !== undefined"
+                    title="Compartilhar postagem">
                     <i class="bi bi-share"></i> Compartilhar
-                </a>
+                </button>
             </div>
         </section>
     </template>
@@ -117,7 +128,7 @@
                                     @click="openEditModal(post)">
                                     <i class="bi bi-pencil"></i> Editar
                                 </button>
-                                <button type="button" class="btn btn--danger" title="Excluir postagem"
+                                <button type="button" class="btn btn--out-danger" title="Excluir postagem"
                                     @click="deletePost(post)">
                                     <i class="bi bi-trash"></i> Excluir
                                 </button>
@@ -130,9 +141,7 @@
 
             <aside :class="['modal', !user.loggedIn && 'active']">
                 <div class="modal__dialog">
-                    <div class="modal__header">
-                        <h3 class="modal__title">Fazer login</h3>
-                    </div>
+                    <h3 class="modal__title">Fazer login</h3>
 
                     <div class="modal__body">
                         <form class="form" @submit.prevent="login">
@@ -148,7 +157,9 @@
                                     required>
                             </div>
 
-                            <button type="submit" class="btn btn--success">Entrar</button>
+                            <div class="form__footer">
+                                <button type="submit" class="btn btn--success">Entrar</button>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -156,12 +167,7 @@
 
             <aside :class="['modal', modalAddOpened && 'active']">
                 <div class="modal__dialog">
-                    <div class="modal__header">
-                        <h3 class="modal__title">Adicionar nova postagem</h3>
-                        <button type="button" class="btn modal__close" title="Fechar modal" @click="closeAddModal">
-                            <i class="bi bi-x"></i>
-                        </button>
-                    </div>
+                    <h3 class="modal__title">Adicionar nova postagem</h3>
 
                     <div class="modal__body">
                         <form class="form" @submit.prevent="addPost">
@@ -191,7 +197,13 @@
                                 </span>
                             </div>
 
-                            <button type="submit" class="btn btn--success">Adicionar</button>
+                            <div class="form__footer">
+                                <button type="submit" class="btn btn--success">Adicionar</button>
+                                <button type="button" class="btn btn--out-danger" title="Fechar modal"
+                                    @click="closeAddModal">
+                                    Cancelar
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -199,12 +211,7 @@
 
             <aside :class="['modal', modalEditOpened && 'active']">
                 <div class="modal__dialog">
-                    <div class="modal__header">
-                        <h3 class="modal__title">Editar postagem</h3>
-                        <button type="button" class="btn modal__close" title="Fechar modal" @click="closeEditModal">
-                            <i class="bi bi-x"></i>
-                        </button>
-                    </div>
+                    <h3 class="modal__title">Editar postagem</h3>
 
                     <div class="modal__body">
                         <form class="form" @submit.prevent="editPost">
@@ -226,13 +233,20 @@
                                     placeholder="Conteúdo da postagem"></textarea>
                             </div>
 
-                            <button type="submit" class="btn btn--success">Editar</button>
+                            <div class="form__footer">
+                                <button type="submit" class="btn btn--success">Editar</button>
+                                <button type="button" class="btn btn--out-danger" title="Fechar modal"
+                                    @click="closeEditModal">
+                                    Cancelar
+                                </button>
+                            </div>
                         </form>
                     </div>
                 </div>
             </aside>
         </div>
     </template>
+
     <template id="not-found-template">
         <div class="not-found">
             <h1 class="not-found__title">404</h1>

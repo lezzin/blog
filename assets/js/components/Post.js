@@ -10,13 +10,13 @@ const Post = {
             post: {
                 id: '',
                 title: '',
-                content: ''
+                content: '',
+                created_at: ''
             },
             loadingPost: true,
         };
     },
     mounted() {
-        this.$root.showBackButton = true;
         window.scrollTo({ top: 0 });
 
         const id = this.$route.params.id;
@@ -29,13 +29,16 @@ const Post = {
                 const docSnap = await getDoc(postDoc);
 
                 if (docSnap.exists()) {
+                    const { title, content, created_at } = docSnap.data();
+
                     this.post = {
                         id: docSnap.id,
-                        title: docSnap.data().title,
-                        content: docSnap.data().content,
+                        title: title,
+                        content: content,
+                        created_at: created_at,
                     };
 
-                    document.title = PAGE_TITLES.postagem(this.post.title);
+                    document.title = PAGE_TITLES.postagem(title);
                 } else {
                     this.$router.push("/");
                 }
@@ -51,6 +54,13 @@ const Post = {
             }
         },
         renderMarkdown(markdown) {
+            // Regex para resgatar URLs do Youtube
+            const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/g;
+
+            markdown = markdown.replace(youtubeRegex, (_match, videoId) => {
+                return `<iframe  src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+            });
+
             return marked.parse(markdown);
         },
         share() {
@@ -64,7 +74,7 @@ const Post = {
         }
     },
     watch: {
-        "$route.params.id": function(id) {
+        "$route.params.id": function (id) {
             this.fetchPost(id);
         }
     }

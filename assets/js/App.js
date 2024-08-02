@@ -58,7 +58,6 @@ new Vue({
                 status: '',
                 message: ''
             },
-            showBackButton: false
         }
     },
     watch: {

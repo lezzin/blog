@@ -18,10 +18,12 @@
                 <router-link class="header__greetings" to="/">Blog</router-link>
 
                 <nav class="header__nav">
-                    <a href="https://github.com" target="_blank"><i class="bi bi-github"></i></a>
-                    <a href="https://instagram.com" target="_blank"><i class="bi bi-instagram"></i></a>
-                    <a href="https://x.com" target="_blank"><i class="bi bi-twitter"></i></a>
-                    <a href="https://youtube.com" target="_blank"><i class="bi bi-youtube"></i></a>
+                    <a href="https://www.instagram.com/wellyngtoonsouza/" rel="noreferrer noopener" target="_blank"><i
+                            class="bi bi-instagram"></i></a>
+                    <a href="https://x.com/well4551" rel="noreferrer noopener" target="_blank"><i
+                            class="bi bi-twitter-x"></i></a>
+                    <a href="https://www.youtube.com/@Wellyoza" rel="noreferrer noopener" target="_blank"><i
+                            class="bi bi-youtube"></i></a>
                 </nav>
             </div>
         </header>
@@ -63,13 +65,18 @@
 
             <div v-else>
                 <nav class="preview" v-if="posts.length > 0">
-                    <router-link v-for="post in posts" class="post" :to="'post/' + post.id">
+                    <router-link v-for="post in posts" class="post post--hover" :to="'post/' + post.id">
                         <h2 class="post__title">{{ post.title }}</h2>
                         <p class="post__description">{{ post.description }}</p>
                         <p class="post__date">Publicado em: {{ post.created_at }}</p>
                     </router-link>
                 </nav>
-                <div class="alert" v-else>Nenhuma postagem encontrada.</div>
+                <div class="alert" v-else>
+                    <p class="alert__message">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Oops! Ainda não há nenhuma postagem. Volte mais tarde.
+                    </p>
+                </div>
             </div>
         </div>
     </template>
@@ -135,7 +142,12 @@
                             </div>
                         </section>
                     </div>
-                    <div class="alert" v-else>Nenhuma postagem encontrada.</div>
+                    <div class="alert" v-else>
+                        <p class="alert__message">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            Nenhuma postagem encontrada.
+                        </p>
+                    </div>
                 </div>
             </div>
 
@@ -198,9 +210,13 @@
                             </div>
 
                             <div class="form__footer">
-                                <button type="submit" class="btn btn--success">Adicionar</button>
+                                <button type="submit" class="btn btn--success">
+                                    <i class="bi bi-check-lg"></i>
+                                    Adicionar
+                                </button>
                                 <button type="button" class="btn btn--out-danger" title="Fechar modal"
                                     @click="closeAddModal">
+                                    <i class="bi bi-x"></i>
                                     Cancelar
                                 </button>
                             </div>
@@ -234,9 +250,13 @@
                             </div>
 
                             <div class="form__footer">
-                                <button type="submit" class="btn btn--success">Editar</button>
+                                <button type="submit" class="btn btn--success">
+                                    <i class="bi bi-check-lg"></i>
+                                    Confirmar edição
+                                </button>
                                 <button type="button" class="btn btn--out-danger" title="Fechar modal"
                                     @click="closeEditModal">
+                                    <i class="bi bi-x"></i>
                                     Cancelar
                                 </button>
                             </div>

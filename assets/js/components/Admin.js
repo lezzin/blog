@@ -42,6 +42,15 @@ const Admin = {
         document.title = PAGE_TITLES.admin;
         window.scrollTo({ top: 0 });
 
+        document.addEventListener("click", e => {
+            const element = e.target;
+
+            if (element.classList.contains("modal")) {
+                this.modalAddOpened && this.closeAddModal();
+                this.modalEditOpened && this.closeEditModal();
+            }
+        });
+
         onAuthStateChanged(getAuth(), user => {
             if (user) {
                 this.user.loggedIn = true;

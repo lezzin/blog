@@ -1,0 +1,16 @@
+@mixin flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@mixin button-styles($bg-color, $font-color, $border-color: null, $hover-bg: null) {
+    background: $bg-color;
+    color: $font-color;
+    border: if($border-color, 1px solid $border-color, none);
+    transition: background .3s ease;
+
+    &:hover {
+        background: if($hover-bg, $hover-bg, darken($bg-color, 10%));
+    }
+}

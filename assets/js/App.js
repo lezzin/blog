@@ -3,6 +3,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import Home from "./components/Home.js";
 import Post from "./components/Post.js";
 import Admin from "./components/Admin.js";
@@ -11,6 +12,7 @@ import NotFound from "./components/NotFound.js";
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
+const auth = getAuth();
 
 getAnalytics(app);
 
@@ -28,7 +30,8 @@ const routes = [
         component: Admin,
         props: {
             db: db,
-            storage: storage
+            storage: storage,
+            auth: auth
         }
     },
     {

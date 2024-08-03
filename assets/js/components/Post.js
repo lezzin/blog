@@ -28,27 +28,21 @@ const Post = {
                 const postDoc = doc(this.db, FIRESTORE_COLLECTION, postId);
                 const docSnap = await getDoc(postDoc);
 
-                if (docSnap.exists()) {
-                    const { title, content, created_at } = docSnap.data();
-
-                    this.post = {
-                        id: docSnap.id,
-                        title: title,
-                        content: content,
-                        created_at: created_at,
-                    };
-
-                    document.title = PAGE_TITLES.postagem(title);
-                } else {
-                    this.$router.push("/");
+                if (!docSnap.exists()) {
+                    return this.$router.push("/");
                 }
-            } catch (error) {
-                console.error('Erro ao recuperar postagem: ', error);
-                this.$root.toast = {
-                    opened: true,
-                    status: 'danger',
-                    'message': 'Erro ao recuperar postagem. Verifique o console.'
+
+                const { title, content, created_at } = docSnap.data();
+                this.post = {
+                    id: docSnap.id,
+                    title: title,
+                    content: content,
+                    created_at: created_at,
                 };
+
+                document.title = PAGE_TITLES.post(title);
+            } catch (error) {
+                this.handleDataError('recuperar postagem', error);
             } finally {
                 this.loadingPost = false;
             }
@@ -57,7 +51,7 @@ const Post = {
             // Regex para resgatar URLs do Youtube
             const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/g;
 
-            markdown = markdown.replace(youtubeRegex, (_match, videoId) => {
+            markdown = markdown.replace(youtubeRegex, (_, videoId) => {
                 return `<iframe  src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
             });
 
@@ -71,7 +65,15 @@ const Post = {
                 text: 'Compartilhar postagem do blog',
                 url: currentUrl,
             });
-        }
+        },
+        handleDataError(action, error) {
+            console.error(`Erro ao ${action}: `, error);
+            this.$root.toast = {
+                opened: true,
+                status: 'danger',
+                message: `Erro ao ${action}. Verifique o console.`
+            };
+        },
     },
     watch: {
         "$route.params.id": function (id) {

@@ -19,24 +19,30 @@ const Home = {
     },
     methods: {
         async fetchPosts() {
+            this.loadingPosts = true;
+
             try {
                 const querySnapshot = await getDocs(collection(this.db, FIRESTORE_COLLECTION));
                 this.posts = querySnapshot.docs.map(doc => ({
                     id: doc.id,
                     title: doc.data().title,
                     description: doc.data().description,
-                    created_at: doc.data().created_at,
+                    content: doc.data().content,
+                    created_at: doc.data().created_at
                 }));
             } catch (error) {
-                console.error('Erro ao recuperar postagens: ', error);
-                this.$root.toast = {
-                    opened: true,
-                    status: 'danger',
-                    message: 'Erro ao recuperar postagens. Verifique o console.'
-                }
+                this.handleDataError('recuperar postagens', error);
             } finally {
                 this.loadingPosts = false;
             }
+        },
+        handleDataError(action, error) {
+            console.error(`Erro ao ${action}: `, error);
+            this.$root.toast = {
+                opened: true,
+                status: 'danger',
+                message: `Erro ao ${action}. Verifique o console.`
+            };
         },
     }
 }

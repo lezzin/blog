@@ -71,12 +71,9 @@
                         <p class="post__date">Publicado em: {{ post.created_at }}</p>
                     </router-link>
                 </nav>
-                <div class="alert" v-else>
-                    <p class="alert__message">
-                        <i class="bi bi-exclamation-triangle"></i>
-                        Oops! Ainda não há nenhuma postagem. Volte mais tarde.
-                    </p>
-                </div>
+                <p class="alert" v-else>
+                    Oops! Ainda não há nenhuma postagem. Volte mais tarde.
+                </p>
             </div>
         </div>
     </template>
@@ -142,12 +139,9 @@
                             </div>
                         </section>
                     </div>
-                    <div class="alert" v-else>
-                        <p class="alert__message">
-                            <i class="bi bi-exclamation-triangle"></i>
-                            Nenhuma postagem encontrada.
-                        </p>
-                    </div>
+                    <p class="alert" v-else>
+                        Nenhuma postagem encontrada.
+                    </p>
                 </div>
             </div>
 
@@ -186,7 +180,7 @@
                             <div class="form__group">
                                 <label for="add-title">Título</label>
                                 <input type="text" id="add-title" v-model="addingPost.title"
-                                    placeholder="Título da postagem" required>
+                                    placeholder="Título da postagem" required autocomplete="off">
                                 <span class="form__helper" v-if="addFormMessages.title">
                                     {{ addFormMessages.title }}
                                 </span>
@@ -195,7 +189,7 @@
                             <div class="form__group">
                                 <label for="add-description">Descrição</label>
                                 <input type="text" id="add-description" v-model="addingPost.description"
-                                    placeholder="Descrição da postagem" required>
+                                    placeholder="Descrição da postagem" required autocomplete="off">
                                 <span class="form__helper" v-if="addFormMessages.description">
                                     {{ addFormMessages.description }}
                                 </span>
@@ -234,13 +228,13 @@
                             <div class="form__group">
                                 <label for="edit-title">Título</label>
                                 <input type="text" id="edit-title" v-model="editingPost.title"
-                                    placeholder="Título da postagem" required>
+                                    placeholder="Título da postagem" required autocomplete="off">
                             </div>
 
                             <div class="form__group">
                                 <label for="edit-description">Descrição</label>
                                 <input type="text" id="edit-description" v-model="editingPost.description"
-                                    placeholder="Descrição da postagem" required>
+                                    placeholder="Descrição da postagem" required autocomplete="off">
                             </div>
 
                             <div class="form__group">

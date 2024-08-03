@@ -111,12 +111,6 @@ body {
     border: 1px solid $border-color;
     padding: 1rem;
     background: darken($background-color, 1.5%);
-    
-    .alert__message {
-        display: flex;
-        align-items: center;
-        gap: 0.6rem;
-    }
 }
 
 .modal {

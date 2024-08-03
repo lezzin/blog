@@ -166,11 +166,6 @@ body {
   padding: 1rem;
   background: #fbfbfb;
 }
-.alert .alert__message {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
 
 .modal {
   position: fixed;

@@ -1,6 +1,5 @@
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
-import { PAGE_TITLES, FIRESTORE_COLLECTION } from "../utils/variables.js";
+import { fetchPost } from "../services/post.js";
 
 const Post = {
     template: "#post-template",
@@ -25,22 +24,14 @@ const Post = {
     methods: {
         async fetchPost(postId) {
             try {
-                const postDoc = doc(this.db, FIRESTORE_COLLECTION, postId);
-                const docSnap = await getDoc(postDoc);
+                const post = await fetchPost(this.db, postId);
 
-                if (!docSnap.exists()) {
-                    return this.$router.push("/");
+                if (!post) {
+                    this.$router.push("/");
+                    return;
                 }
 
-                const { title, content, created_at } = docSnap.data();
-                this.post = {
-                    id: docSnap.id,
-                    title: title,
-                    content: content,
-                    created_at: created_at,
-                };
-
-                document.title = PAGE_TITLES.post(title);
+                this.post = post;
             } catch (error) {
                 this.handleDataError('recuperar postagem', error);
             } finally {
@@ -52,7 +43,7 @@ const Post = {
             const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/g;
 
             markdown = markdown.replace(youtubeRegex, (_, videoId) => {
-                return `<iframe  src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
+                return `<iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>`;
             });
 
             return marked.parse(markdown);

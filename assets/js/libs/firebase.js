@@ -1,5 +1,3 @@
-// import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-analytics.js";
-
 const firebaseConfig = {
     apiKey: "AIzaSyA74WsXa-NKzIKVS7ktO1ZYUHHyf0NGZx4",
     authDomain: "blog-wellyngton-53e0b.firebaseapp.com",

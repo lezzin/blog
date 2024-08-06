@@ -1,8 +1,9 @@
-import { collection, getDocs, addDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { collection, addDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 import { signOut, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { FIRESTORE_COLLECTION, PAGE_TITLES } from "../utils/variables.js";
 import "https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js";
+import { fetchPosts } from "../services/post.js";
 
 const Admin = {
     template: "#admin-template",
@@ -193,14 +194,7 @@ const Admin = {
             this.setLoading(true);
 
             try {
-                const querySnapshot = await getDocs(collection(this.db, FIRESTORE_COLLECTION));
-                this.posts = querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    title: doc.data().title,
-                    description: doc.data().description,
-                    content: doc.data().content,
-                    created_at: doc.data().created_at
-                }));
+                this.posts = await fetchPosts(this.db);
             } catch (error) {
                 this.handleDataError('recuperar postagens', error);
             } finally {

@@ -422,9 +422,11 @@ main {
 }
 
 .not-found {
-  display: grid;
-  place-items: center;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  height: 55vh;
 }
 .not-found__title {
   font-size: 8rem;
@@ -432,7 +434,7 @@ main {
 }
 .not-found__text {
   font-size: 3rem;
-  margin: 0.5rem 0 1rem 0;
+  margin-bottom: 3rem;
 }
 .not-found__link {
   color: #25862a;

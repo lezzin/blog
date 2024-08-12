@@ -23,16 +23,25 @@ body {
     width: fit-content;
     gap: 0.6rem;
     font-size: 1.4rem;
-    padding: 0.6rem 1.6rem;
+    padding: 0.6rem 1.2rem;
     border-radius: $border-radius;
+    font: inherit;
 
     &--back {
-        color: $primary-color;
-        padding: 0;
+        transition: color .3s ease;
+        padding: 0 !important;
+
+        &:hover {
+            color: $primary-color;
+        }
     }
 
     &--success {
         @include button-styles($success-color, $font-secondary-color);
+    }
+
+    &--primary {
+        @include button-styles($primary-color, $font-secondary-color);
     }
 
     &--out-success {
@@ -166,7 +175,7 @@ body {
 
     &__helper {
         font-size: 1.2rem;
-        color: $danger-color;
+        color: lighten($font-primary-color, 30%);
     }
 
     &__footer {
@@ -260,7 +269,7 @@ main {
         background: darken($background-color, 2%);
         border-radius: $border-radius;
         border: 1px solid $border-color;
-        padding: 1.5rem;
+        padding: 1.6rem;
         width: 100%;
         flex-grow: 1;
 
@@ -323,14 +332,48 @@ main {
         font-weight: 600;
     }
 
+    &__header__footer {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    &__date {
+        font-size: 1.2rem;
+        color: lighten($font-primary-color, 50%);
+    }
+
     &__footer {
         border-top: 1px solid $border-color;
         margin-top: 2rem;
-        padding-top: 2rem;
+        padding-top: 3rem;
+        font-size: 1.6rem;
 
-        p {
-            font-size: 1.8rem;
-            margin-bottom: 0.6rem;
+        &__title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        &__column {
+            &:not(:last-of-type) {
+                margin-bottom: 1rem;
+            }
+
+            p {
+                margin-bottom: 0.3rem;
+            }
+
+            .btn-group {
+                display: flex;
+                gap: .6rem;
+                flex-wrap: wrap;
+            }
+
+            .btn {
+                font-size: 1.4rem;
+                padding: 0.5rem 1rem;
+            }
         }
     }
 
@@ -413,7 +456,7 @@ main {
     flex-direction: column;
     align-items: center;
     height: 55vh;
-    
+
     &__title {
         font-size: 8rem;
         font-weight: normal;

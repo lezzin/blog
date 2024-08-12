@@ -12,11 +12,6 @@ const Admin = {
         return {
             modalAddOpened: false,
             modalEditOpened: false,
-            addFormMessages: {
-                title: '',
-                description: '',
-                content: '',
-            },
             addingPost: {
                 title: '',
                 description: '',
@@ -105,8 +100,6 @@ const Admin = {
             }
         },
         async addPost() {
-            if (!this.validateAddPostForm()) return;
-
             try {
                 const currentTime = new Date().toLocaleDateString("pt-BR", {
                     day: "2-digit",
@@ -201,32 +194,6 @@ const Admin = {
                 this.setLoading(false);
             }
         },
-        validateAddPostForm() {
-            let isValid = true;
-
-            if (this.addingPost.title.length > 50) {
-                this.addFormMessages.title = "O título deve conter no máximo 50 caracteres";
-                isValid = false;
-            } else {
-                this.addFormMessages.title = '';
-            }
-
-            if (this.addingPost.description.length > 150) {
-                this.addFormMessages.description = "A descrição deve conter no máximo 150 caracteres";
-                isValid = false;
-            } else {
-                this.addFormMessages.description = '';
-            }
-
-            if (this.markdown.add.value() === '') {
-                this.addFormMessages.content = "Preencha o conteúdo da postagem";
-                isValid = false;
-            } else {
-                this.addFormMessages.content = '';
-            }
-
-            return isValid;
-        },
         extractImageUrls(content) {
             const urlRegex = /!\[.*?\]\((https:\/\/firebasestorage\.googleapis\.com\/.*?)\)/g;
             let urls = [];
@@ -265,7 +232,6 @@ const Admin = {
         },
         resetAddPostForm() {
             this.addingPost = { title: '', description: '' };
-            this.addFormMessages = { title: '', description: '', content: '' };
             this.markdown.add.value('');
             this.closeAddModal();
         },

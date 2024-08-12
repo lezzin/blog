@@ -368,6 +368,12 @@ main {
                 display: flex;
                 gap: .6rem;
                 flex-wrap: wrap;
+
+                @media(width <=768px) {
+                    >* {
+                        flex-grow: 1;
+                    }
+                }
             }
 
             .btn {

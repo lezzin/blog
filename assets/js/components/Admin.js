@@ -1,6 +1,6 @@
 import { collection, addDoc, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
-import { signOut, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { signOut, onAuthStateChanged, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { FIRESTORE_COLLECTION, PAGE_TITLES } from "../utils/variables.js";
 import "https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js";
 import { fetchPosts } from "../services/post.js";
@@ -68,6 +68,16 @@ const Admin = {
                 this.destroyMarkdownEditors();
             } catch (error) {
                 this.handleAuthError(error);
+            }
+        },
+        async changePassword() {
+            const email = this.auth.currentUser.email;
+
+            try {
+                await sendPasswordResetEmail(this.auth, email);
+                this.showSuccessToast("Email de redefinição de senha enviado");
+            } catch (error) {
+                this.handleDataError('redefinir senha');
             }
         },
         initialize() {

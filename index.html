@@ -94,7 +94,8 @@
 
                 <div class="view__header__footer">
                     <p class="view__date">Publicado em: {{ post.created_at }}</p>
-                    <a href="javascript:history.back()" class="btn btn--back"><i class="bi bi-arrow-left"></i> Voltar</a>
+                    <a href="javascript:history.back()" class="btn btn--back"><i class="bi bi-arrow-left"></i>
+                        Voltar</a>
                 </div>
             </div>
 
@@ -137,12 +138,12 @@
         <div class="admin">
             <div v-if="user.loggedIn">
                 <header class="admin__header">
-                    <h2 class="admin__title">Postagens</h2>
+                    <h2 class="admin__title">Administração</h2>
 
                     <div class="admin__buttons">
-                        <button type="button" class="btn btn--success" title="Adicionar nova postagem"
-                            @click="openAddModal">
-                            <i class="bi bi-plus"></i> Nova postagem
+                        <button type="button" class="btn btn--out-success" title="Alterar senha"
+                            @click="changePassword">
+                            <i class="bi bi-lock"></i> Alterar senha
                         </button>
 
                         <button type="button" class="btn btn--danger" title="Sair da conta" @click="logout">
@@ -150,6 +151,10 @@
                         </button>
                     </div>
                 </header>
+
+                <button type="button" class="btn btn--success --left" title="Adicionar nova postagem" @click="openAddModal">
+                    <i class="bi bi-plus"></i> Nova postagem
+                </button>
 
                 <div class="loader" v-if="loadingPosts">
                     <span class="loader__spinner"></span>

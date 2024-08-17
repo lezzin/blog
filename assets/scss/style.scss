@@ -22,7 +22,6 @@ body {
     text-align: center;
     width: fit-content;
     gap: 0.6rem;
-    font-size: 1.4rem;
     padding: 0.6rem 1.2rem;
     border-radius: $border-radius;
     font: inherit;
@@ -294,7 +293,7 @@ main {
 
         &__date {
             font-size: 1.2rem;
-            color: lighten($font-primary-color, 50%);
+            color: $muted-color;
             margin-top: 1.2rem;
         }
 
@@ -341,7 +340,7 @@ main {
 
     &__date {
         font-size: 1.2rem;
-        color: lighten($font-primary-color, 50%);
+        color: $muted-color;
     }
 
     &__footer {
@@ -426,6 +425,13 @@ main {
         flex-wrap: wrap;
         gap: 1rem;
         margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid $border-color;
+    }
+
+    .--left {
+        margin-left: auto;
+        margin-bottom: 1rem;
     }
 
     &__buttons {

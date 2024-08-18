@@ -1,4 +1,4 @@
-const PAGE_TITLE_PREFIX = "Blog de Wellyoza"
+const PAGE_TITLE_PREFIX = document.title;
 const PAGE_TITLES = {
     home: `${PAGE_TITLE_PREFIX} | Home`,
     admin: `${PAGE_TITLE_PREFIX} | Administração`,

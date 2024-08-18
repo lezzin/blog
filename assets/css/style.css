@@ -67,8 +67,14 @@ body {
   transition: color 0.3s ease;
   padding: 0 !important;
 }
+.btn--back i {
+  transition: transform 0.3s ease;
+}
 .btn--back:hover {
   color: #dd3b53;
+}
+.btn--back:hover i {
+  transform: translateX(-3px);
 }
 .btn--success {
   background: #25862a;
@@ -286,15 +292,16 @@ main {
 
 .presentation {
   display: grid;
-  gap: 1rem;
-  margin-bottom: 3rem;
+  margin-bottom: 5rem;
 }
 .presentation__title {
-  font-size: 3.2rem;
-  margin-bottom: 1rem;
+  font-size: 4rem;
   font-weight: 600;
+  margin-bottom: 1rem;
 }
-.presentation__text {
+.presentation__texts {
+  display: grid;
+  gap: 1rem;
   font-size: 1.8rem;
   color: #4d4d4d;
 }
@@ -316,7 +323,7 @@ main {
   flex-grow: 1;
 }
 .preview .post--hover {
-  transition: box-shadow 0.3s ease;
+  transition: all 0.3s ease;
 }
 .preview .post--hover:hover {
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
@@ -333,7 +340,7 @@ main {
 .preview .post__date {
   font-size: 1.2rem;
   color: #666666;
-  margin-top: 1.2rem;
+  margin-top: 2.4rem;
 }
 .preview .post__buttons {
   display: flex;

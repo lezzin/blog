@@ -55,14 +55,13 @@
         <div>
             <div class="presentation">
                 <h2 class="presentation__title">Olá, sou Wellyngton Souza 👋</h2>
-                <p class="presentation__text">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam aperiam quo debitis inventore
-                    voluptatum harum doloribus placeat veritatis vel qui.
-                </p>
-                <p class="presentation__text">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam aperiam quo debitis inventore
-                    voluptatum harum doloribus placeat veritatis vel qui.
-                </p>
+                <div class="presentation__texts">
+                    <p> Um estudante disposto a sofrer em TI pela ciência. </p>
+                    <p>
+                        Aqui, você encontrará conteúdos acadêmicos de qualidade, dicas, tutoriais e discussões que vão
+                        ajudar a aprofundar seus conhecimentos e a desenvolver habilidades essenciais para sua carreira.
+                        Vamos juntos nessa jornada de aprendizado! </p>
+                </div>
             </div>
 
             <div class="loader" v-if="loadingPosts">
@@ -152,7 +151,8 @@
                     </div>
                 </header>
 
-                <button type="button" class="btn btn--success --left" title="Adicionar nova postagem" @click="openAddModal">
+                <button type="button" class="btn btn--success --left" title="Adicionar nova postagem"
+                    @click="openAddModal">
                     <i class="bi bi-plus"></i> Nova postagem
                 </button>
 

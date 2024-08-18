@@ -27,11 +27,20 @@ body {
     font: inherit;
 
     &--back {
-        transition: color .3s ease;
+        $transition: .3s ease;
+        transition: color $transition;
         padding: 0 !important;
+
+        i {
+            transition: transform $transition;
+        }
 
         &:hover {
             color: $primary-color;
+
+            i {
+                transform: translateX(-3px);
+            }
         }
     }
 
@@ -241,16 +250,17 @@ main {
 
 .presentation {
     display: grid;
-    gap: 1rem;
-    margin-bottom: 3rem;
+    margin-bottom: 5rem;
 
     &__title {
-        font-size: 3.2rem;
-        margin-bottom: 1rem;
+        font-size: 4rem;
         font-weight: 600;
+        margin-bottom: 1rem;
     }
 
-    &__text {
+    &__texts {
+        display: grid;
+        gap: 1rem;
         font-size: 1.8rem;
         color: lighten($font-primary-color, 30%);
     }
@@ -273,7 +283,7 @@ main {
         flex-grow: 1;
 
         &--hover {
-            transition: box-shadow .3s ease;
+            transition: all .3s ease;
 
             &:hover {
                 box-shadow: $box-shadow-sm;
@@ -294,7 +304,7 @@ main {
         &__date {
             font-size: 1.2rem;
             color: $muted-color;
-            margin-top: 1.2rem;
+            margin-top: 2.4rem;
         }
 
         &__buttons {

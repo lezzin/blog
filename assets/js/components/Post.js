@@ -49,11 +49,11 @@ const Post = {
             return marked.parse(markdown);
         },
         share() {
-            const currentUrl = window.location.href;
+           const currentUrl = window.location.href;
 
             navigator.share({
-                title: 'Blog de Wellyngton Souza',
-                text: 'Compartilhar postagem do blog',
+                title: 'Confira este artigo no blog de Wellyngton Souza!',
+                text: 'Achei este artigo interessante e acho que você vai gostar também. Dê uma olhada no blog de Wellyngton Souza!',
                 url: currentUrl,
             });
         },

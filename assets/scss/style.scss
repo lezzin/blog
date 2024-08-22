@@ -48,12 +48,16 @@ body {
         @include button-styles($success-color, $font-secondary-color);
     }
 
+    &--out-success {
+        @include button-styles(lighten($success-color, 60%), $success-color, $success-color, lighten($success-color, 53%));
+    }
+
     &--primary {
         @include button-styles($primary-color, $font-secondary-color);
     }
 
-    &--out-success {
-        @include button-styles(lighten($success-color, 60%), $success-color, $success-color, lighten($success-color, 53%));
+    &--out-primary {
+        @include button-styles(lighten($primary-color, 42%), $primary-color, $primary-color, lighten($primary-color, 35%));
     }
 
     &--danger {
@@ -253,7 +257,7 @@ main {
     margin-bottom: 5rem;
 
     &__title {
-        font-size: 4rem;
+        font-size: 3.6rem;
         font-weight: 600;
         margin-bottom: 1rem;
     }
@@ -297,7 +301,6 @@ main {
 
         &__description {
             font-size: 1.8rem;
-            margin-top: .6rem;
             color: lighten($font-primary-color, 30%);
         }
 
@@ -354,28 +357,25 @@ main {
     }
 
     &__footer {
-        border-top: 1px solid $border-color;
+        border-top: 2px solid $border-color;
         margin-top: 2rem;
-        padding-top: 3rem;
+        padding-top: 2rem;
         font-size: 1.6rem;
 
         &__title {
             font-size: 2rem;
-            margin-bottom: 2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
         }
 
-        &__column {
-            &:not(:last-of-type) {
-                margin-bottom: 1rem;
-            }
-
+        &__content {
             p {
                 margin-bottom: 0.3rem;
             }
 
             .btn-group {
                 display: flex;
-                gap: .6rem;
+                gap: .5rem;
                 flex-wrap: wrap;
             }
 
@@ -421,7 +421,7 @@ main {
             color: $primary-color;
 
             &:hover {
-                color: darken($primary-color, 10%);
+                color: darken($primary-color, 15%);
             }
         }
     }
@@ -487,7 +487,7 @@ main {
         color: $primary-color;
 
         &:hover {
-            color: darken($primary-color, 10%);
+            color: darken($primary-color, 15%);
         }
     }
 }
@@ -496,13 +496,13 @@ main {
     display: grid;
     place-items: center;
     height: 10vh;
-    font-size: 1.4rem;
+    font-size: 1.3rem;
 
     a {
         color: $primary-color;
 
         &:hover {
-            color: darken($primary-color, 10%);
+            color: darken($primary-color, 15%);
         }
     }
 }

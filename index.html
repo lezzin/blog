@@ -41,7 +41,7 @@
         </main>
 
         <footer class="footer">
-            <p>&copy; <a href="https://lezzin.github.io" target="_blank">Leandro Adrian</a> & Wellyngton Souza</p>
+            <p>&copy; Desenvolvido por <a href="https://lezzin.github.io" target="_blank">Leandro Adrian</a> - 2024</p>
         </footer>
 
         <aside :class="['toast', toast.opened && 'active']">
@@ -56,11 +56,11 @@
             <div class="presentation">
                 <h2 class="presentation__title">Olá, sou Wellyngton Souza 👋</h2>
                 <div class="presentation__texts">
-                    <p> Um estudante disposto a sofrer em TI pela ciência. </p>
                     <p>
                         Aqui, você encontrará conteúdos acadêmicos de qualidade, dicas, tutoriais e discussões que vão
                         ajudar a aprofundar seus conhecimentos e a desenvolver habilidades essenciais para sua carreira.
-                        Vamos juntos nessa jornada de aprendizado! </p>
+                        Vamos juntos nessa jornada de aprendizado!
+                    </p>
                 </div>
             </div>
 
@@ -101,33 +101,28 @@
             <div class="view__content" v-html="renderMarkdown(post.content)"></div>
 
             <div class="view__footer">
-                <h4 class="view__footer__title">Gostou do conteúdo? 👍</h4>
+                <h4 class="view__footer__title">Gostou do conteúdo?</h4>
 
-                <div class="view__footer__column">
-                    <p>Me siga em minhas redes sociais!</p>
+                <div class="view__footer__content">
+                    <p>Me siga em minhas redes sociais e compartilhe com seus amigos!</p>
 
                     <div class="btn-group">
                         <a href="https://www.instagram.com/wellyngtoonsouza/" rel="noreferrer noopener" target="_blank"
-                            class="btn btn--primary">
-                            <i class="bi bi-instagram"></i> wellyngtoonsouza
+                            class="btn btn--out-primary" role="button">
+                            <i class="bi bi-instagram"></i>
                         </a>
                         <a href="https://x.com/well4551" rel="noreferrer noopener" target="_blank"
-                            class="btn btn--primary">
-                            <i class="bi bi-twitter-x"></i> well4551
+                            class="btn btn--out-primary" role="button">
+                            <i class="bi bi-twitter-x"></i>
                         </a>
                         <a href="https://www.youtube.com/@Wellyoza" rel="noreferrer noopener" target="_blank"
-                            class="btn btn--primary">
-                            <i class="bi bi-youtube"></i> Wellyoza
+                            class="btn btn--out-primary" role="button">
+                            <i class="bi bi-youtube"></i>
                         </a>
+                        <button type="button" class="btn btn--primary" @click="share" title="Compartilhar postagem">
+                            <i class="bi bi-share"></i> Compartilhar
+                        </button>
                     </div>
-                </div>
-
-                <div class="view__footer__column" @v-if="navigator.share !== undefined">
-                    <p>Compartilhe com seus amigos!</p>
-
-                    <button type="button" class="btn btn--primary" @click="share" title="Compartilhar postagem">
-                        <i class="bi bi-share"></i> Compartilhar agora
-                    </button>
                 </div>
             </div>
         </section>

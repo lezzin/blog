@@ -11,6 +11,6 @@
     transition: background .3s ease;
 
     &:hover {
-        background: if($hover-bg, $hover-bg, darken($bg-color, 10%));
+        background: if($hover-bg, $hover-bg, darken($bg-color, 15%));
     }
 }

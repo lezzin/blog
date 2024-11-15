@@ -1,7 +1,7 @@
 <template>
     <q-toolbar class="max-width max-width--sm bg-primary text-white q-py-sm">
         <q-avatar>
-            <img src="/src/assets/img/profile.jpg">
+            <img src="../../assets/img/profile.jpg">
         </q-avatar>
 
         <q-toolbar-title>

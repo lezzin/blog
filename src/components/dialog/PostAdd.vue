@@ -43,30 +43,40 @@ const editorTools = [
 
 const { add } = usePost();
 
+const file = ref(null);
 const title = ref('');
 const description = ref('');
 const content = ref('');
 
 async function addPost() {
     try {
-        await add(title.value, description.value, content.value);
+        await add(title.value, description.value, content.value, file.value);
         notifyUser('Publicação adicionada com sucesso!', 'success');
     } catch (error) {
         notifyUser(error.message, 'success');
     }
 };
 
-const isDisabled = computed(() => (!content.value || !title.value || !description.value));
+const isDisabled = computed(() => (!content.value || !title.value || !description.value || !file.value));
 
 </script>
 
 <template>
     <BaseFormCard title="Adicionar nova publicação" @handler="addPost" @close="props.onClose">
         <template #body>
+            <q-file filled bottom-slots v-model="file" label="Thumbnail" accept="image/*" counter>
+                <template v-slot:prepend>
+                    <q-icon name="cloud_upload" @click.stop.prevent />
+                </template>
+                <template v-slot:append>
+                    <q-icon name="close" @click.stop.prevent="file = null" class="cursor-pointer" />
+                </template>
+            </q-file>
+
             <q-input v-model="title" filled hide-bottom-space label="Título" :rules="[validateTitle]" />
             <q-input v-model="description" filled hide-bottom-space label="Descrição" :rules="[validateDescription]" />
             <q-editor :toolbar="editorTools" v-model="content" min-height="10rem"
-                placeholder="Adicione aqui o conteúdo..." />
+                placeholder="Digite aqui o conteúdo..." />
         </template>
 
         <template #action>

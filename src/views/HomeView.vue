@@ -27,9 +27,13 @@ onMounted(() => {
         <div v-if="allPosts.data.length > 0">
             <q-list bordered separator>
                 <q-item v-for="post in allPosts.data" :key="post.id" clickable :to="`/post/${post.id}`">
+                    <q-item-section thumbnail class="q-pl-md">
+                        <img :src="post.thumbnail" class="rounded-borders" style="object-fit: cover;" />
+                    </q-item-section>
+
                     <q-item-section>
-                        <h3 class="text-h5 text-primary q-my-sm">{{ post.title }}</h3>
-                        <p class="text-body2">{{ post.description }}</p>
+                        <h3 class=" text-h5 text-primary q-ma-none">{{ post.title }}</h3>
+                        <p class="text-body2 q-ma-none">{{ post.description }}</p>
                     </q-item-section>
                 </q-item>
             </q-list>

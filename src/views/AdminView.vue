@@ -19,6 +19,7 @@ const router = useRouter();
 const { allPosts, getAllSnapshot, remove } = usePost();
 
 const columns = [
+    { name: 'image', label: 'Imagem', align: 'left', field: 'thumbnail' },
     { name: 'title', label: 'Título', align: 'left', field: 'title' },
     { name: 'description', label: 'Descrição', align: 'left', field: 'description' },
     { name: 'content', label: 'Conteúdo', align: 'left', field: 'content' },
@@ -90,6 +91,7 @@ onMounted(() => {
 
             <template #body="props">
                 <q-tr>
+                    <q-td><q-img :src="props.row.thumbnail" height="64px" /></q-td>
                     <q-td class="ellipsis" style="max-width: 200px;">{{ props.row.title }}</q-td>
                     <q-td class="ellipsis" style="max-width: 200px;">{{ props.row.description }}</q-td>
                     <q-td class="ellipsis" style="max-width: 200px;">{{ props.row.content }}</q-td>
@@ -98,6 +100,9 @@ onMounted(() => {
                             <q-btn icon="edit" color="green" size="sm"
                                 @click.stop="openDialog('edit', { post: { ...props.row } })">
                                 <q-tooltip>Editar publicação</q-tooltip>
+                            </q-btn>
+                            <q-btn icon="visibility" color="green" outline size="sm" :to="`/post/${props.row.id}`">
+                                <q-tooltip>Visualizar publicação</q-tooltip>
                             </q-btn>
                             <q-btn icon="delete" color="red" outline size="sm" @click.stop="deletePost(props.row)">
                                 <q-tooltip>Remover publicação</q-tooltip>

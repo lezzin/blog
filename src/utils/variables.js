@@ -1,4 +1,5 @@
 const PAGE_TITLE_PREFIX = document.title;
+const DEFAULT_MAX_WIDTH = 900;
 
 const PAGE_TITLES = {
     home: `${PAGE_TITLE_PREFIX} | Início`,
@@ -11,5 +12,6 @@ const FIRESTORE_COLLECTION = 'posts';
 
 export {
     PAGE_TITLES,
-    FIRESTORE_COLLECTION
+    FIRESTORE_COLLECTION,
+    DEFAULT_MAX_WIDTH
 } 

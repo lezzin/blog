@@ -6,6 +6,7 @@ import { FIRESTORE_COLLECTION } from "../utils/variables";
 import { db, storage } from "../config/firebase";
 
 const allPosts = reactive({ data: [] });
+const temporaryImages = reactive([]);
 
 const uploadImage = async (file) => {
     const newFilename = Date.now().toString();
@@ -17,16 +18,50 @@ const uploadImage = async (file) => {
     return storagePath;
 };
 
+const removeImage = async (storagePath) => {
+    if (storagePath) {
+        const fileRef = ref(storage, storagePath);
+        await deleteObject(fileRef);
+    }
+};
+
+const extractImageUrlsFromMarkdown = (content) => {
+    const imageUrlRegex = /!\[.*?\]\((.*?)\)/g;
+    const urls = [];
+    let match;
+
+    while ((match = imageUrlRegex.exec(content)) !== null) {
+        urls.push(match[1]);
+    }
+
+    return urls;
+};
+
+const removeImagesFromMarkdownContent = async (content) => {
+    const urls = extractImageUrlsFromMarkdown(content);
+
+    for (const url of urls) {
+        try {
+            const isFirebaseUrl = url.includes("firebasestorage.googleapis.com");
+            if (isFirebaseUrl) {
+                const storagePath = decodeURIComponent(url.split("/o/")[1].split("?")[0]);
+                await removeImage(storagePath);
+            }
+        } catch (error) {
+            console.warn(`Erro ao remover a imagem: ${url}`, error);
+        }
+    }
+};
+
 async function resolveImageUrl(post) {
     if (post.thumbnail) {
         post.thumbnail = await getImageUrl(post.thumbnail);
     }
-
     return post;
 }
 
 async function resolveImageUrls(posts) {
-    return await Promise.all(posts.map(async (post) => (resolveImageUrl(post))));
+    return await Promise.all(posts.map(resolveImageUrl));
 }
 
 async function getImageUrl(storagePath) {
@@ -57,7 +92,7 @@ async function getAllSnapshot() {
 
     const postsCollection = collection(db, FIRESTORE_COLLECTION);
     onSnapshot(postsCollection, async (snapshot) => {
-        const posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const posts = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
         allPosts.data = await resolveImageUrls(posts);
     });
 }
@@ -68,39 +103,88 @@ async function add(title, description, content, file) {
         month: "2-digit",
         year: "numeric",
         hour: "2-digit",
-        minute: "2-digit"
+        minute: "2-digit",
     });
 
-    const fileName = await uploadImage(file);
+    const fileName = file ? await uploadImage(file) : null;
 
-    await addDoc(collection(db, FIRESTORE_COLLECTION), {
+    const post = await addDoc(collection(db, FIRESTORE_COLLECTION), {
         title,
         description,
         content,
         thumbnail: fileName,
-        created_at: currentTime
+        created_at: currentTime,
     });
+
+    const usedImages = extractImageUrlsFromMarkdown(content);
+
+    [fileName, ...usedImages].forEach((path) => {
+        const index = temporaryImages.indexOf(path);
+
+        if (index !== -1) {
+            temporaryImages.splice(index, 1);
+        }
+    });
+
+    await clearTemporaryImages();
+
+    return post.id;
 }
 
 async function edit(id, title, description, content, file = null) {
     const postDoc = doc(db, FIRESTORE_COLLECTION, id);
+    const currentPost = await getPost(id);
+
     const updates = { title, description, content };
 
+    let newThumbnail = null;
     if (file) {
-        const newThumbnail = await uploadImage(file);
+        newThumbnail = await uploadImage(file);
+
+        if (currentPost.thumbnail) {
+            await removeImage(currentPost.thumbnail);
+        }
+
         updates.thumbnail = newThumbnail;
     }
 
+    await removeImagesFromMarkdownContent(currentPost.content);
     await updateDoc(postDoc, updates);
+
+    const usedImages = extractImageUrlsFromMarkdown(content);
+    [newThumbnail, ...usedImages].forEach((path) => {
+        const index = temporaryImages.indexOf(path);
+        if (index !== -1) {
+            temporaryImages.splice(index, 1);
+        }
+    });
+
+    await clearTemporaryImages();
 }
 
 async function remove(postToDelete) {
     if (postToDelete.thumbnail) {
-        const fileRef = ref(storage, postToDelete.thumbnail);
-        await deleteObject(fileRef);
+        await removeImage(postToDelete.thumbnail);
     }
 
+    await removeImagesFromMarkdownContent(postToDelete.content);
     await deleteDoc(doc(db, FIRESTORE_COLLECTION, postToDelete.id));
+}
+
+async function clearTemporaryImages() {
+    for (const imagePath of temporaryImages) {
+        const isUsed = allPosts.data.some(post => post.content.includes(imagePath) || post.thumbnail === imagePath);
+
+        if (!isUsed) {
+            await removeImage(imagePath);
+        }
+    }
+
+    temporaryImages.length = 0;
+}
+
+function markImageAsTemporary(storagePath) {
+    temporaryImages.push(storagePath);
 }
 
 export function usePost() {
@@ -112,6 +196,10 @@ export function usePost() {
         getAllSnapshot,
         getPost,
         getImageUrl,
-        allPosts
+        uploadImage,
+        removeImage,
+        markImageAsTemporary,
+        clearTemporaryImages,
+        allPosts,
     };
 }

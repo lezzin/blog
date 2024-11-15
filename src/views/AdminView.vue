@@ -12,11 +12,13 @@ import { auth } from '../config/firebase';
 import PostAdd from '../components/dialog/PostAdd.vue';
 import PostEdit from '../components/dialog/PostEdit.vue';
 import { useRouter } from 'vue-router';
+import { useQuasar } from 'quasar';
 
+const $q = useQuasar();
 const modal = useModal();
 const router = useRouter();
 
-const { allPosts, getAllSnapshot, remove } = usePost();
+const { allPosts, getAllSnapshot, remove, clearTemporaryImages } = usePost();
 
 const columns = [
     { name: 'image', label: 'Imagem', align: 'left', field: 'thumbnail' },
@@ -37,8 +39,9 @@ function openDialog(dialog, props) {
     modal.show.value = true;
 }
 
-function closeDialog() {
+async function closeDialog() {
     modal.show.value = false;
+    await clearTemporaryImages();
 }
 
 async function deletePost(post) {
@@ -61,18 +64,26 @@ async function logout() {
     }
 }
 
-onMounted(() => {
-    getAllSnapshot();
-    document.title = PAGE_TITLES.admin;
+onMounted(async () => {
+    $q.loading.show();
+
+    try {
+        await getAllSnapshot();
+        document.title = PAGE_TITLES.admin;
+    } catch (error) {
+        notifyUser(error.message, 'error');
+    } finally {
+        $q.loading.hide();
+    }
 });
 </script>
 
 <template>
     <q-page padding>
-        <div class="row justify-between items-center">
-            <h2 class="text-h3">Administração</h2>
+        <div class="row justify-between items-center q-mb-lg">
+            <h2 class="q-my-sm text-h4 text-weight-bold">Administração</h2>
 
-            <div class="q-gutter-sm">
+            <div class="q-gutter-sm q-mb-none">
                 <q-btn icon="add" rounded color="primary" @click.stop="openDialog('add')">
                     <q-tooltip>Adicionar postagem</q-tooltip>
                 </q-btn>
@@ -91,7 +102,11 @@ onMounted(() => {
 
             <template #body="props">
                 <q-tr>
-                    <q-td><q-img :src="props.row.thumbnail" height="64px" /></q-td>
+                    <q-td>
+                        <a target="_blank" :href="props.row.thumbnail">
+                            <q-img :src="props.row.thumbnail" height="64px" />
+                        </a>
+                    </q-td>
                     <q-td class="ellipsis" style="max-width: 200px;">{{ props.row.title }}</q-td>
                     <q-td class="ellipsis" style="max-width: 200px;">{{ props.row.description }}</q-td>
                     <q-td class="ellipsis" style="max-width: 200px;">{{ props.row.content }}</q-td>
@@ -114,7 +129,7 @@ onMounted(() => {
         </q-table>
     </q-page>
 
-    <q-dialog v-model="modal.show.value">
+    <q-dialog v-model="modal.show.value" @before-hide="clearTemporaryImages">
         <component :is="modal.component.value" v-bind="modal.props.value"></component>
     </q-dialog>
 </template>

@@ -6,6 +6,7 @@ import { notifyUser } from '../../utils/notification';
 import { usePost } from '../../composables/usePost';
 
 import BaseFormCard from '../base/BaseFormCard.vue';
+import MarkdownEditor from '../shared/MarkdownEditor.vue';
 import { useQuasar } from 'quasar';
 
 const $q = useQuasar();
@@ -21,31 +22,7 @@ const props = defineProps({
     }
 })
 
-const editorTools = [
-    ['left', 'center', 'right', 'justify'],
-    ['bold', 'italic', 'underline', 'strike'],
-    ['undo', 'redo'],
-    [
-        {
-            label: $q.lang.editor.fontSize,
-            icon: $q.iconSet.editor.fontSize,
-            fixedLabel: true,
-            fixedIcon: true,
-            list: 'no-icons',
-            options: [
-                'size-1',
-                'size-2',
-                'size-3',
-                'size-4',
-                'size-5',
-                'size-6',
-                'size-7'
-            ]
-        }
-    ]
-];
-
-const postComposable = usePost();
+const { edit } = usePost();
 
 const id = ref(props.post.id);
 const file = ref(null);
@@ -54,12 +31,21 @@ const description = ref(props.post.description);
 const content = ref(props.post.content);
 
 async function editPost() {
+    $q.loading.show({ message: 'Editando publicação...' });
+
     try {
-        await postComposable.edit(id.value, title.value, description.value, content.value);
+        await edit(id.value, title.value, description.value, content.value, file.value);
         notifyUser('Publicação editada com sucesso!', 'success');
     } catch (error) {
         notifyUser(error.message, 'error');
+    } finally {
+        $q.loading.hide();
+        props.onClose();
     }
+}
+
+function updateContent(newValue) {
+    content.value += newValue;
 }
 
 const isDisabled = computed(() => (!content.value || !title.value || !description.value));
@@ -79,8 +65,7 @@ const isDisabled = computed(() => (!content.value || !title.value || !descriptio
 
             <q-input v-model="title" filled hide-bottom-space label="Título" :rules="[validateTitle]" />
             <q-input v-model="description" filled hide-bottom-space label="Descrição" :rules="[validateDescription]" />
-            <q-editor :toolbar="editorTools" v-model="content" min-height="10rem"
-                placeholder="Digite aqui o conteúdo..." />
+            <MarkdownEditor :content="content" @updateContent="updateContent" />
         </template>
 
         <template #action>

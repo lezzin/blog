@@ -20,6 +20,8 @@
             <q-tooltip>Acessar Youtube</q-tooltip>
         </q-btn>
 
-        <q-btn to="/admin" icon="bi-person-gear" flat label="Admin" />
+        <q-separator vertical spaced inset />
+
+        <q-btn to="/admin" icon="bi-person-gear" flat />
     </q-toolbar>
 </template>

@@ -10,7 +10,6 @@ const props = defineProps({
 
 function handleSubmit() {
     emit('handler');
-    emit('close');
 }
 
 </script>

@@ -46,10 +46,10 @@ const router = createRouter({
                 requiresAuth: false
             }
         },
-        // {
-        //     path: '/:catchAll(.*)',
-        //     component: () => import("../views/NotFound.vue")
-        // }
+        {
+            path: '/:catchAll(.*)',
+            component: () => import("../views/NotFoundView.vue")
+        }
     ]
 })
 

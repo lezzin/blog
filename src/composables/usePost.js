@@ -1,8 +1,7 @@
 import { collection, getDocs, doc, updateDoc, addDoc, getDoc, onSnapshot, deleteDoc } from "firebase/firestore";
-import { deleteObject, ref } from "firebase/storage";
 
 import { FIRESTORE_COLLECTION } from "../utils/variables";
-import { db, storage } from "../config/firebase";
+import { db } from "../config/firebase";
 import { reactive } from "vue";
 
 const allPosts = reactive({ data: [] });
@@ -32,30 +31,6 @@ async function getAllSnapshot() {
     });
 }
 
-function extractImageUrls(content) {
-    const urlRegex = /!\[.*?\]\((https:\/\/firebasestorage\.googleapis\.com\/.*?)\)/g;
-    let urls = [];
-    let match;
-
-    while ((match = urlRegex.exec(content)) !== null) {
-        urls.push(match[1]);
-    }
-
-    return urls;
-}
-
-async function deleteImagesFromStorage(urls) {
-    const promises = urls.map(async (url) => {
-        const storagePath = url.split("/o/")[1].split("?")[0];
-        const decodedPath = decodeURIComponent(storagePath);
-        const imageRef = ref(storage, decodedPath);
-
-        await deleteObject(imageRef);
-    });
-
-    await Promise.all(promises);
-}
-
 async function add(title, description, content) {
     const currentTime = new Date().toLocaleString("pt-BR", {
         day: "2-digit",
@@ -75,20 +50,10 @@ async function add(title, description, content) {
 
 async function edit(id, title, description, content) {
     const postDoc = doc(db, FIRESTORE_COLLECTION, id);
-    const oldPost = await getPost(id);
-
-    const oldImageUrls = extractImageUrls(oldPost.content);
-    const newImageUrls = extractImageUrls(content);
-
-    const imagesToRemove = oldImageUrls.filter((url) => !newImageUrls.includes(url));
-
-    await deleteImagesFromStorage(imagesToRemove);
     await updateDoc(postDoc, { title, description, content });
 }
 
-const remove = async (postToDelete) => {
-    const imageUrls = extractImageUrls(postToDelete.content);
-    await deleteImagesFromStorage(imageUrls);
+async function remove(postToDelete) {
     await deleteDoc(doc(db, FIRESTORE_COLLECTION, postToDelete.id));
 };
 

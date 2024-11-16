@@ -16,7 +16,11 @@ watch(
     () => props.post.content,
     (newContent) => {
         if (newContent) {
-            markdown.value = DOMPurify.sanitize(marked(newContent));
+            const sanitizedContent = DOMPurify.sanitize(marked(newContent), {
+                ADD_ATTR: ['src']
+            });
+
+            markdown.value = sanitizedContent;
         }
     },
     { immediate: true }

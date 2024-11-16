@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue';
+import { useQuasar } from 'quasar';
 
 import { validateDescription, validateTitle } from '../../utils/validations';
 import { notifyUser } from '../../utils/notification';
@@ -8,7 +9,6 @@ import { usePost } from '../../composables/usePost';
 
 import BaseFormCard from '../base/BaseFormCard.vue';
 import MarkdownEditor from '../shared/MarkdownEditor.vue';
-import { useQuasar } from 'quasar';
 
 const $q = useQuasar();
 
@@ -21,14 +21,11 @@ const props = defineProps({
 
 const { add } = usePost();
 
+const isLoading = ref(false);
 const file = ref(null);
 const title = ref('');
 const description = ref('');
 const content = ref('');
-
-function updateContent(newValue) {
-    content.value += newValue;
-}
 
 async function addPost() {
     $q.loading.show({ message: 'Adicionando publicação...' });
@@ -44,7 +41,15 @@ async function addPost() {
     }
 }
 
-const isDisabled = computed(() => (!content.value || !title.value || !description.value || !file.value));
+function updateContent(newValue) {
+    content.value = newValue;
+}
+
+function updateLoading(newValue) {
+    isLoading.value = newValue;
+}
+
+const isDisabled = computed(() => (!content.value || !title.value || !description.value || isLoading.value));
 </script>
 
 <template>
@@ -62,7 +67,7 @@ const isDisabled = computed(() => (!content.value || !title.value || !descriptio
             <q-input v-model="title" filled hide-bottom-space label="Título" :rules="[validateTitle]" />
             <q-input v-model="description" filled hide-bottom-space label="Descrição" :rules="[validateDescription]" />
 
-            <MarkdownEditor :content="content" @updateContent="updateContent" />
+            <MarkdownEditor :content="content" @updateContent="updateContent" @loadingContent="updateLoading" />
         </template>
 
         <template #action>

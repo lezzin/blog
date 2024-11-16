@@ -11,15 +11,14 @@ const uploadImage = async (file) => {
     const newFilename = Date.now().toString();
     const storagePath = `images/${newFilename}`;
     const fileRef = ref(storage, storagePath);
+
     await uploadBytes(fileRef, file);
     return storagePath;
 };
 
 const removeImage = async (storagePath) => {
-    if (storagePath) {
-        const fileRef = ref(storage, storagePath);
-        await deleteObject(fileRef);
-    }
+    const fileRef = ref(storage, decodeURIComponent(storagePath));
+    await deleteObject(fileRef);
 };
 
 const extractImageUrlsFromMarkdown = (content) => {
@@ -31,23 +30,18 @@ const extractImageUrlsFromMarkdown = (content) => {
         urls.push(match[1]);
     }
 
-    return urls;
+    return urls.map(url => decodeImagePath(url));
 };
 
 const removeImagesFromMarkdownContent = async (content) => {
     const urls = extractImageUrlsFromMarkdown(content);
+
     for (const url of urls) {
-        try {
-            const isFirebaseUrl = url.includes("firebasestorage.googleapis.com");
-            if (isFirebaseUrl) {
-                const storagePath = decodeURIComponent(url.split("/o/")[1].split("?")[0]);
-                await removeImage(storagePath);
-            }
-        } catch (error) {
-            console.warn(`Erro ao remover a imagem: ${url}`, error);
-        }
+        await removeImage(url);
     }
 };
+
+const decodeImagePath = (url) => decodeURIComponent(url.split("/o/")[1].split("?")[0]);
 
 function markImageAsTemporary(storagePath) {
     temporaryImages.push(storagePath);
@@ -88,16 +82,7 @@ async function add(title, description, content, file) {
         created_at: currentTime,
     });
 
-    const usedImages = extractImageUrlsFromMarkdown(content);
-
-    [fileName, ...usedImages].map((path) => {
-        const index = temporaryImages.indexOf(path);
-        if (index !== -1) {
-            temporaryImages.splice(index, 1);
-        }
-    });
-
-    await clearTemporaryImages();
+    await handleImagesInContent(content, fileName);
     return post.id;
 }
 
@@ -106,8 +91,8 @@ async function edit(id, title, description, content, file = null) {
     const currentPost = await getPost(id);
 
     const updates = { title, description, content };
-
     let newThumbnail = null;
+
     if (file) {
         newThumbnail = await uploadImage(file);
 
@@ -118,12 +103,25 @@ async function edit(id, title, description, content, file = null) {
         updates.thumbnail = newThumbnail;
     }
 
-    await removeImagesFromMarkdownContent(currentPost.content);
-    await updateDoc(postDoc, updates);
+    const oldImages = extractImageUrlsFromMarkdown(currentPost.content);
+    const newImages = extractImageUrlsFromMarkdown(content);
 
+    for (const oldImage of oldImages) {
+        if (!newImages.includes(oldImage)) {
+            await removeImage(oldImage);
+        }
+    }
+
+    await handleImagesInContent(content, newThumbnail);
+    await updateDoc(postDoc, updates);
+}
+
+async function handleImagesInContent(content, newThumbnail) {
     const usedImages = extractImageUrlsFromMarkdown(content);
-    [newThumbnail, ...usedImages].forEach((path) => {
+
+    [newThumbnail, ...usedImages].filter(Boolean).forEach((path) => {
         const index = temporaryImages.indexOf(path);
+
         if (index !== -1) {
             temporaryImages.splice(index, 1);
         }
@@ -162,10 +160,12 @@ async function getAllSnapshot() {
     allPosts.data = await getAll();
 
     const postsCollection = collection(db, FIRESTORE_COLLECTION);
-    onSnapshot(postsCollection, async (snapshot) => {
+    const unsubscribe = onSnapshot(postsCollection, async (snapshot) => {
         const posts = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
         allPosts.data = await resolveImageUrls(posts);
     });
+
+    return unsubscribe;
 }
 
 async function clearTemporaryImages() {
@@ -180,7 +180,7 @@ async function clearTemporaryImages() {
         }
     }
 
-    temporaryImages.length = 0;
+    temporaryImages.splice(0, temporaryImages.length);
 }
 
 export function usePost() {

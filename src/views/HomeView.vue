@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 import { usePost } from '../composables/usePost';
 import { PAGE_TITLES } from '../utils/variables';
 import { useQuasar } from 'quasar';
@@ -8,16 +8,24 @@ import { notifyUser } from '../utils/notification';
 const { allPosts, getAllSnapshot } = usePost();
 const $q = useQuasar();
 
+let unsubscribe;
+
 onMounted(async () => {
     $q.loading.show();
 
     try {
-        await getAllSnapshot();
+        unsubscribe = await getAllSnapshot();
         document.title = PAGE_TITLES.home;
     } catch (error) {
         notifyUser(error.message, 'error');
     } finally {
         $q.loading.hide();
+    }
+});
+
+onUnmounted(() => {
+    if (unsubscribe) {
+        unsubscribe();
     }
 });
 </script>

@@ -1,5 +1,5 @@
 <script setup>
-import { markRaw, onMounted } from 'vue';
+import { markRaw, onMounted, onUnmounted } from 'vue';
 import { signOut, sendPasswordResetEmail, deleteUser } from 'firebase/auth';
 
 import { useModal } from '../composables/useModal';
@@ -84,16 +84,24 @@ async function deleteAccount() {
     }
 }
 
+let unsubscribe;
+
 onMounted(async () => {
     $q.loading.show();
 
     try {
-        await getAllSnapshot();
+        unsubscribe = await getAllSnapshot();
         document.title = PAGE_TITLES.admin;
     } catch (error) {
         notifyUser(error.message, 'error');
     } finally {
         $q.loading.hide();
+    }
+});
+
+onUnmounted(() => {
+    if (unsubscribe) {
+        unsubscribe();
     }
 });
 </script>

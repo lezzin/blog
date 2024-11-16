@@ -7,7 +7,7 @@ import { notifyUser } from '../../utils/notification';
 const { uploadImage, getImageUrl, markImageAsTemporary } = usePost();
 const $q = useQuasar();
 
-const emit = defineEmits(['updateContent']);
+const emit = defineEmits(['updateContent', 'loadingContent']);
 const props = defineProps({
     content: {
         type: String,
@@ -51,6 +51,8 @@ async function handleDrop(evt) {
         return;
     }
 
+    emit('loadingContent', true);
+
     try {
         const storagePath = await uploadImage(droppedFile);
         markImageAsTemporary(storagePath);
@@ -63,11 +65,13 @@ async function handleDrop(evt) {
         notifyUser('Imagem enviada com sucesso!', 'success');
     } catch (error) {
         notifyUser(`Erro ao enviar imagem: ${error.message}`, 'negative');
+    } finally {
+        emit('loadingContent', false);
     }
 }
 </script>
 
 <template>
     <q-editor :toolbar="editorTools" v-model="content" min-height="10rem" placeholder="Digite aqui o conteúdo..."
-        @drop="handleDrop" @input="$emit('updateContent', content)" />
+        @drop="handleDrop" @input="$emit('updateContent', content)" max-height="30vh" />
 </template>

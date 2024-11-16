@@ -43,9 +43,7 @@ function sharePost() {
     }).catch((error) => notifyUser(error.message, 'error'));
 }
 
-onMounted(async () => {
-    await loadPost();
-});
+onMounted(loadPost);
 </script>
 
 <template>
@@ -68,9 +66,6 @@ onMounted(async () => {
             <q-separator class="q-mt-md q-mb-xl" />
 
             <q-btn label="Compartilhar artigo" icon="share" color="primary" @click.stop="sharePost" />
-        </div>
-        <div v-else>
-            <q-spinner color="primary" size="3em" />
         </div>
     </q-page>
 </template>

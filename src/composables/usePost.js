@@ -1,7 +1,6 @@
 import { collection, getDocs, doc, updateDoc, addDoc, getDoc, onSnapshot, deleteDoc } from "firebase/firestore";
 import { deleteObject, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { reactive } from "vue";
-
 import { FIRESTORE_COLLECTION } from "../utils/variables";
 import { db, storage } from "../config/firebase";
 
@@ -11,10 +10,8 @@ const temporaryImages = reactive([]);
 const uploadImage = async (file) => {
     const newFilename = Date.now().toString();
     const storagePath = `images/${newFilename}`;
-
     const fileRef = ref(storage, storagePath);
     await uploadBytes(fileRef, file);
-
     return storagePath;
 };
 
@@ -39,7 +36,6 @@ const extractImageUrlsFromMarkdown = (content) => {
 
 const removeImagesFromMarkdownContent = async (content) => {
     const urls = extractImageUrlsFromMarkdown(content);
-
     for (const url of urls) {
         try {
             const isFirebaseUrl = url.includes("firebasestorage.googleapis.com");
@@ -52,6 +48,10 @@ const removeImagesFromMarkdownContent = async (content) => {
         }
     }
 };
+
+function markImageAsTemporary(storagePath) {
+    temporaryImages.push(storagePath);
+}
 
 async function resolveImageUrl(post) {
     if (post.thumbnail) {
@@ -67,34 +67,6 @@ async function resolveImageUrls(posts) {
 async function getImageUrl(storagePath) {
     const fileRef = ref(storage, storagePath);
     return await getDownloadURL(fileRef);
-}
-
-async function getPost(id) {
-    const postDoc = doc(db, FIRESTORE_COLLECTION, id);
-    const docSnapshot = await getDoc(postDoc);
-
-    if (!docSnapshot.exists()) {
-        throw new Error(`Documento com ID ${id} não encontrado.`);
-    }
-
-    const post = await resolveImageUrl(docSnapshot.data());
-
-    return { id: docSnapshot.id, ...post };
-}
-
-async function getAll() {
-    const querySnapshot = await getDocs(collection(db, FIRESTORE_COLLECTION));
-    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-}
-
-async function getAllSnapshot() {
-    allPosts.data = await getAll();
-
-    const postsCollection = collection(db, FIRESTORE_COLLECTION);
-    onSnapshot(postsCollection, async (snapshot) => {
-        const posts = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        allPosts.data = await resolveImageUrls(posts);
-    });
 }
 
 async function add(title, description, content, file) {
@@ -120,7 +92,6 @@ async function add(title, description, content, file) {
 
     [fileName, ...usedImages].map((path) => {
         const index = temporaryImages.indexOf(path);
-
         if (index !== -1) {
             temporaryImages.splice(index, 1);
         }
@@ -170,11 +141,39 @@ async function remove(postToDelete) {
     await deleteDoc(doc(db, FIRESTORE_COLLECTION, postToDelete.id));
 }
 
+async function getPost(id) {
+    const postDoc = doc(db, FIRESTORE_COLLECTION, id);
+    const docSnapshot = await getDoc(postDoc);
+
+    if (!docSnapshot.exists()) {
+        throw new Error(`Documento com ID ${id} não encontrado.`);
+    }
+
+    const post = await resolveImageUrl(docSnapshot.data());
+    return { id: docSnapshot.id, ...post };
+}
+
+async function getAll() {
+    const querySnapshot = await getDocs(collection(db, FIRESTORE_COLLECTION));
+    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+}
+
+async function getAllSnapshot() {
+    allPosts.data = await getAll();
+
+    const postsCollection = collection(db, FIRESTORE_COLLECTION);
+    onSnapshot(postsCollection, async (snapshot) => {
+        const posts = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        allPosts.data = await resolveImageUrls(posts);
+    });
+}
+
 async function clearTemporaryImages() {
     const updatedPosts = await getAll();
 
     for (const imagePath of temporaryImages) {
-        const isUsed = updatedPosts.some(post => post.content.includes(imagePath.replace('images/', 'images%2F')) || post.thumbnail === imagePath);
+        const formattedImagePath = imagePath.replace('images/', 'images%2F');
+        const isUsed = updatedPosts.some(post => post.content.includes(formattedImagePath) || post.thumbnail === imagePath);
 
         if (!isUsed) {
             await removeImage(imagePath);
@@ -182,10 +181,6 @@ async function clearTemporaryImages() {
     }
 
     temporaryImages.length = 0;
-}
-
-function markImageAsTemporary(storagePath) {
-    temporaryImages.push(storagePath);
 }
 
 export function usePost() {

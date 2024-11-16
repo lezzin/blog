@@ -54,6 +54,7 @@ async function handleDrop(evt) {
     try {
         const storagePath = await uploadImage(droppedFile);
         markImageAsTemporary(storagePath);
+
         const imageUrl = await getImageUrl(storagePath);
 
         content.value += `\n![Imagem](${imageUrl})\n`;

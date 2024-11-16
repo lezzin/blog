@@ -1,4 +1,6 @@
 <script setup>
+import { usePost } from '../../composables/usePost';
+
 const emit = defineEmits(["close", "handler"]);
 
 const props = defineProps({
@@ -8,14 +10,16 @@ const props = defineProps({
     }
 });
 
-function handleSubmit() {
-    emit('handler');
-}
+const { clearTemporaryImages } = usePost();
 
+async function handleClose() {
+    await clearTemporaryImages();
+    emit('close');
+}
 </script>
 
 <template>
-    <div class="card-form" @submit.prevent="handleSubmit">
+    <div class="card-form" @submit.prevent="$emit('handler');">
         <q-card tag="form">
             <q-card-section>
                 <h4 class="q-my-sm">{{ props.title }}</h4>
@@ -27,7 +31,7 @@ function handleSubmit() {
 
             <q-card-section class="q-gutter-sm" align="right">
                 <slot name="action"></slot>
-                <q-btn flat icon="cancel" label="Cancelar" color="negative" @click="$emit('close')" />
+                <q-btn type="button" flat icon="cancel" label="Cancelar" color="negative" @click="handleClose" />
             </q-card-section>
         </q-card>
     </div>

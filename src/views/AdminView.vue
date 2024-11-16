@@ -18,7 +18,7 @@ const $q = useQuasar();
 const modal = useModal();
 const router = useRouter();
 
-const { allPosts, getAllSnapshot, remove, clearTemporaryImages } = usePost();
+const { allPosts, getAllSnapshot, remove } = usePost();
 
 const columns = [
     { name: 'image', label: 'Imagem', align: 'left', field: 'thumbnail' },
@@ -41,7 +41,7 @@ function openDialog(dialog, props) {
 
 async function closeDialog() {
     modal.show.value = false;
-    await clearTemporaryImages();
+
 }
 
 async function deletePost(post) {
@@ -129,7 +129,7 @@ onMounted(async () => {
         </q-table>
     </q-page>
 
-    <q-dialog v-model="modal.show.value" @before-hide="clearTemporaryImages">
+    <q-dialog v-model="modal.show.value" persistent>
         <component :is="modal.component.value" v-bind="modal.props.value"></component>
     </q-dialog>
 </template>

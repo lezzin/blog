@@ -24,28 +24,13 @@ watch(
 </script>
 
 <template>
-    <div v-html="markdown" class="markdown-content"></div>
+    <div id="markdown" v-html="markdown"></div>
 </template>
 
-<style scoped>
-.markdown-content img {
+<style>
+#markdown img {
     max-width: 100%;
     height: auto;
-    display: block;
-    margin: 1rem 0;
-}
-
-.markdown-content p {
-    margin: 0.5rem 0;
-}
-
-.markdown-content h1,
-.markdown-content h2,
-.markdown-content h3,
-.markdown-content h4,
-.markdown-content h5,
-.markdown-content h6 {
-    margin: 1rem 0 0.5rem;
-    font-weight: bold;
+    vertical-align: middle;
 }
 </style>

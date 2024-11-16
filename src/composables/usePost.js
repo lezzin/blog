@@ -118,7 +118,7 @@ async function add(title, description, content, file) {
 
     const usedImages = extractImageUrlsFromMarkdown(content);
 
-    [fileName, ...usedImages].forEach((path) => {
+    [fileName, ...usedImages].map((path) => {
         const index = temporaryImages.indexOf(path);
 
         if (index !== -1) {
@@ -127,7 +127,6 @@ async function add(title, description, content, file) {
     });
 
     await clearTemporaryImages();
-
     return post.id;
 }
 
@@ -172,8 +171,10 @@ async function remove(postToDelete) {
 }
 
 async function clearTemporaryImages() {
+    const updatedPosts = await getAll();
+
     for (const imagePath of temporaryImages) {
-        const isUsed = allPosts.data.some(post => post.content.includes(imagePath) || post.thumbnail === imagePath);
+        const isUsed = updatedPosts.some(post => post.content.includes(imagePath.replace('images/', 'images%2F')) || post.thumbnail === imagePath);
 
         if (!isUsed) {
             await removeImage(imagePath);

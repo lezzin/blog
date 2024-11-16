@@ -40,7 +40,7 @@ const router = createRouter({
             component: () => import("../views/LoginView.vue"),
             meta: {
                 requiresAuth: false,
-                screenWidth: 1080
+                screenWidth: DEFAULT_MAX_WIDTH
             }
         },
         {

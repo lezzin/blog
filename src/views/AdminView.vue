@@ -1,6 +1,6 @@
 <script setup>
 import { markRaw, onMounted } from 'vue';
-import { signOut } from 'firebase/auth';
+import { signOut, sendPasswordResetEmail, deleteUser } from 'firebase/auth';
 
 import { useModal } from '../composables/useModal';
 import { usePost } from '../composables/usePost';
@@ -45,7 +45,7 @@ async function closeDialog() {
 }
 
 async function deletePost(post) {
-    if (!confirm("Realmente deseja excluir a postagem? Essa ação é irreversível!")) return;
+    if (!confirm("Realmente deseja excluir a publicação? Essa ação é irreversível!")) return;
 
     try {
         await remove(post);
@@ -59,6 +59,26 @@ async function logout() {
     try {
         await signOut(auth);
         router.push('/')
+    } catch (error) {
+        notifyUser(error.message, 'error');
+    }
+}
+
+async function sendPasswordEmail() {
+    try {
+        await sendPasswordResetEmail(auth, auth.currentUser.email);
+        notifyUser('Email de redefinição de senha enviado com sucesso.', 'success');
+    } catch (error) {
+        notifyUser(error.message, 'error');
+    }
+}
+
+async function deleteAccount() {
+    if (!confirm("Você realmente deseja excluir sua conta? Essa ação é irreversível!")) return;
+
+    try {
+        await deleteUser(auth.currentUser);
+        notifyUser('Usuário excluído com sucesso.', 'success');
     } catch (error) {
         notifyUser(error.message, 'error');
     }
@@ -83,17 +103,27 @@ onMounted(async () => {
         <div class="row justify-between items-center q-mb-lg">
             <h2 class="q-my-sm text-h4 text-weight-bold">Administração</h2>
 
-            <div class="q-gutter-sm q-mb-none">
-                <q-btn icon="add" rounded color="primary" @click.stop="openDialog('add')">
-                    <q-tooltip>Adicionar postagem</q-tooltip>
-                </q-btn>
-                <q-btn icon="logout" rounded outline color="primary" @click.stop="logout">
-                    <q-tooltip>Sair</q-tooltip>
-                </q-btn>
-            </div>
+            <q-btn icon="add" rounded color="primary" @click.stop="openDialog('add')">
+                <q-tooltip>Adicionar publicação</q-tooltip>
+            </q-btn>
         </div>
 
+        <q-card class="q-mb-lg">
+            <q-card-section>
+                <h3 class="q-my-sm text-h5 text-weight-bold">Configurações da conta</h3>
+
+                <div class="q-gutter-sm">
+                    <q-btn icon="password" color="primary" @click="sendPasswordEmail" label="Alterar senha" />
+                    <q-btn icon="person_remove" label="Excluir conta" color="negative" @click="deleteAccount" />
+                    <q-btn icon="logout" label="Sair" outline color="negative" @click="logout" />
+                </div>
+            </q-card-section>
+        </q-card>
+
         <q-table :columns="columns" :rows="allPosts.data">
+            <template #top>
+                <h3 class="q-my-sm text-h5 text-weight-bold">Publicações</h3>
+            </template>
             <template #no-data>
                 <p class="full-width text-body2 text-center q-mb-none">
                     Nenhuma publicação encontrada. Comece adicionando uma!

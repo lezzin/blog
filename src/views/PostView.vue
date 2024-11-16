@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 
 import { usePost } from '../composables/usePost';
 import { notifyUser } from '../utils/notification';
@@ -9,6 +9,7 @@ import { useQuasar } from 'quasar';
 import MarkdownContent from '../components/shared/MarkdownContent.vue';
 
 const { getPost } = usePost();
+const router = useRouter();
 const route = useRoute();
 const $q = useQuasar();
 
@@ -23,6 +24,7 @@ async function loadPost() {
         document.title = PAGE_TITLES.post(fetchedPost.title);
     } catch (error) {
         notifyUser(error.message, 'error');
+        router.push('/');
     } finally {
         $q.loading.hide();
     }

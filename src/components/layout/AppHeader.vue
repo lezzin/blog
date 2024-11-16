@@ -1,6 +1,6 @@
 <template>
     <q-toolbar class="max-width max-width--sm bg-primary text-white q-py-sm">
-        <q-avatar>
+        <q-avatar rounded>
             <img src="../../assets/img/profile.jpg">
         </q-avatar>
 
@@ -22,6 +22,8 @@
 
         <q-separator vertical spaced inset />
 
-        <q-btn to="/admin" icon="bi-person-gear" flat />
+        <q-btn to="/admin" icon="bi-person-gear" flat round>
+            <q-tooltip>Acessar administração</q-tooltip>
+        </q-btn>
     </q-toolbar>
 </template>

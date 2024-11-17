@@ -1,22 +1,26 @@
 <script setup>
-import { markRaw, onMounted, onUnmounted } from 'vue';
+import { markRaw, onMounted, onUnmounted, provide } from 'vue';
 import { signOut, sendPasswordResetEmail, deleteUser } from 'firebase/auth';
 
 import { useModal } from '../composables/useModal';
+import { useConfirmAction } from '../composables/useConfirmAction'
 import { usePost } from '../composables/usePost';
 
 import { PAGE_TITLES } from '../utils/variables';
 import { notifyUser } from '../utils/notification';
 import { auth } from '../config/firebase';
 
-import PostAdd from '../components/dialog/PostAdd.vue';
-import PostEdit from '../components/dialog/PostEdit.vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
+
+import PostAdd from '../components/dialog/PostAdd.vue';
+import PostEdit from '../components/dialog/PostEdit.vue';
+import ConfirmAction from '../components/dialog/ConfirmAction.vue';
 
 const $q = useQuasar();
 const modal = useModal();
 const router = useRouter();
+const confirmComposable = useConfirmAction();
 
 const { allPosts, getAllSnapshot, remove } = usePost();
 
@@ -39,20 +43,28 @@ function openDialog(dialog, props) {
     modal.show.value = true;
 }
 
-async function closeDialog() {
-    modal.show.value = false;
-
+function openConfirmAction(message, callback) {
+    confirmComposable.show.value = true;
+    confirmComposable.message.value = message;
+    confirmComposable.callback.value = callback;
 }
 
-async function deletePost(post) {
-    if (!confirm("Realmente deseja excluir a publicação? Essa ação é irreversível!")) return;
+async function closeDialog() {
+    modal.show.value = false;
+}
 
-    try {
-        await remove(post);
-        notifyUser('Publicação removida com sucesso!', 'success');
-    } catch (error) {
-        notifyUser(error.message, 'error');
-    }
+function deletePost(post) {
+    openConfirmAction(
+        "Realmente deseja excluir a publicação? Essa ação é irreversível!",
+        async () => {
+            try {
+                await remove(post);
+                notifyUser("Publicação removida com sucesso!", "success");
+            } catch (error) {
+                notifyUser(error.message, "error");
+            }
+        }
+    );
 }
 
 async function logout() {
@@ -74,14 +86,17 @@ async function sendPasswordEmail() {
 }
 
 async function deleteAccount() {
-    if (!confirm("Você realmente deseja excluir sua conta? Essa ação é irreversível!")) return;
-
-    try {
-        await deleteUser(auth.currentUser);
-        notifyUser('Usuário excluído com sucesso.', 'success');
-    } catch (error) {
-        notifyUser(error.message, 'error');
-    }
+    openConfirmAction(
+        "Você realmente deseja excluir sua conta? Essa ação é irreversível!",
+        async () => {
+            try {
+                await deleteUser(auth.currentUser);
+                notifyUser('Usuário excluído com sucesso.', 'success');
+            } catch (error) {
+                notifyUser(error.message, 'error');
+            }
+        }
+    );
 }
 
 let unsubscribe;
@@ -104,6 +119,8 @@ onUnmounted(() => {
         unsubscribe();
     }
 });
+
+provide("confirmAction", confirmComposable);
 </script>
 
 <template>
@@ -167,7 +184,15 @@ onUnmounted(() => {
         </q-table>
     </q-page>
 
-    <q-dialog v-model="modal.show.value" persistent>
-        <component :is="modal.component.value" v-bind="modal.props.value"></component>
-    </q-dialog>
+    <teleport to="#modal">
+        <q-dialog v-model="modal.show.value" persistent>
+            <component :is="modal.component.value" v-bind="modal.props.value"></component>
+        </q-dialog>
+    </teleport>
+
+    <teleport to="#modal">
+        <q-dialog v-model="confirmComposable.show.value" persistent>
+            <ConfirmAction />
+        </q-dialog>
+    </teleport>
 </template>
